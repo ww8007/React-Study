@@ -9,12 +9,13 @@ class App extends Component {
     super(props);
     this.state = {
       mode: 'read',
+      selected_content_id: 2,
       welcom: { title: 'Welcome', desc: 'Hello, React!' },
       subject: { title: 'WEB', sub: 'world wide web!' },
       contents: [
-        { id: 1, titles: 'HTML', des: 'HTML is for information' },
-        { id: 2, titles: 'CSS', des: 'CSS is for desing' },
-        { id: 3, titles: 'JavaScript', des: 'JavaScript is for interactive' },
+        { id: 1, titles: 'HTML', desc: 'HTML is for information' },
+        { id: 2, titles: 'CSS', desc: 'CSS is for desing' },
+        { id: 3, titles: 'JavaScript', desc: 'JavaScript is for interactive' },
       ],
     };
   }
@@ -26,8 +27,16 @@ class App extends Component {
       _title = this.state.welcom.title;
       _desc = this.state.welcom.desc;
     } else if (this.state.mode === 'read') {
-      _title = this.state.contents[0].title;
-      _desc = this.state.contents[0].des;
+      var i = 0;
+      while (i < this.state.contents.length) {
+        var data = this.state.contents[i];
+        if (data.id === this.state.selected_content_id) {
+          _title = data.titles;
+          _desc = data.desc;
+          break;
+        }
+        i = i + 1;
+      }
     }
     return (
       <div className="App">
@@ -40,8 +49,8 @@ class App extends Component {
         ></Subject>
 
         <TOC
-          onChangePage={function () {
-            this.setState({ mode: 'read' });
+          onChangePage={function (id) {
+            this.setState({ mode: 'read', selected_content_id: Number(id) });
           }.bind(this)}
           data={this.state.contents}
         >
