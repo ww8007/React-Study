@@ -76,6 +76,14 @@ props -> 버튼
 state -> 내부 장치들
 내부 구현에 필요한 데이터들
 
+- props
+  read-only
+  변경 불가 -> component 밖에서는 수정 가능
+- State
+  this.setState
+
+둘 다 모두 render() 함수 호출
+
 component 생성
 -> props_name="props-value"
 
@@ -113,7 +121,7 @@ react props, state의 값이 바뀌면 state 가지고 있는 component의 rende
 - render()
   어떤 html을 그릴건가 하는게 render 함수
 
-### react 클릭 규칙
+### react 클릭 규칙az
 
 onClick()
 js와는 다른 문법
@@ -177,3 +185,113 @@ Suject 호출 하면 Subject.js의 Component의 Subject 안의 a 테그 안 onCh
   {this.props.title}
 </a>
 ```
+
+### event
+
+event 에는 target이 존재
+e.target -> a tag 가르킴
+target.dataset.id -> 해서 인자를 가르키는 객체를 가르킴
+
+### .bind
+
+두번째로 들어온 값을 첫번째 함수의 매개변수 값으로 받아줌
+-> 속성을 이용한 매개 변수 전달 방법
+
+```js
+<a
+  href={'/content/' + data[i].id}
+  onClick={function (id, e) {
+    // 첫 번째 인자로 넘겨줄 인자 설정
+    e.preventDefault();
+    this.props.onChangePage(id);
+  }.bind(this, data[i].id)}
+  // 두 번째 인자로 넘겨줄 인수값 설정
+>
+  {data[i].titles}{' '}
+</a>
+```
+
+### props , event
+
+상위 -> 하위 props
+하위 -> 상위 event
+
+### redux
+
+데이터 저장소를 하나로 명령하여 다른 모든 데이터를 변경하는게 해둠
+
+### CRUD
+
+Create
+
+Read
+
+Update
+
+Delete
+
+### form tag
+
+```html
+<form action="/create_process" method="post"></form>
+```
+
+이렇게 선언해야 url에 표시되지 않고 간다
+
+### concat 함수
+
+push는 원본 배열을 수정하여 바꾸지만
+concat 사용 시 원본 데이터 수정하지 않고 변동사항만 추가 시켜줌
+
+concat은 return 값을 가짐
+-> 복제본을 만든다고 생각하면 됨
+
+지금의 react project는 불합리적 면모
+
+TOC : contents 배열들
+rendor() method 호출 되면서 다시 그려지는게 원래 맞음
+지금은 모든 상황에서 rendor()가 호출됨
+-> 프로그램이 커지게 된다면 문제가 됨
+-> react 개발자가
+
+### shouldComponentUpdate()
+
+인자로 newProps, newState 값 가질 수 있음
+true 면 render호출
+false 면 render 호출 x
+
+```js
+shouldComponentUpdate(newProps, newState) {
+    console.log('TOC render should');
+
+    if (this.props.data === newProps.data) {
+      return false;
+    }
+    return true;
+  }
+```
+
+concat이 아닌 push로 data 값 입력 시
+이전 값과 이후 값이 같아지게 되서 rendor가 계속 호출되게 된다.
+프로그램이 작아지면 이 문제는 굳이 필요가 없다
+-> software가 커지면 문제가 생기게 됨
+
+### 복사 생성
+
+1. 배열의 경우
+   var a = [1, 2];
+   var b = Array.from(a)
+   a 와 b 는 내용은 같지만 본질적으로는 같지는 않음
+
+2. 객체의 경우
+   var a = {name:'egoing'};
+   var b = Object.assin({}, a);
+   a 와 b 는 내용은 같지만 본질적으로는 같지 않음
+
+얕은 복사 생성
+
+### 부가적 immutable.js
+
+모든 명령어가 원본에 대해서 불변해서 장점
+
+input을 했을 때 state 값을 바꿔야만 readonly 상태가 아니게 됨
