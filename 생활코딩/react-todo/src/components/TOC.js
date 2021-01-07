@@ -15,7 +15,7 @@ class TOC extends Component {
               this.props.onChangePage(id);
             }.bind(this, data[i].id)}
           >
-            {data[i].titles}{' '}
+            {data[i].titles}
           </a>
         </li>,
       );
