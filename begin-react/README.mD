@@ -182,3 +182,105 @@ HelloWolrd.defaultProps = {
 - isSpeical{true}의 값이 bool 인 경우 isSpeical로만 해줘도 true로 인식하게 됨
 
 ### useState를 통한 동적 상태 관리
+
+react 16.8 hooks -> 동적 상태 구현 가능
+
+- 자바 스크립트 화살표 함수  
+   function 표현에 비해서 구문이 짧고 자신의 this, argumnets, sunper 또는 new.target 바인딩 x
+  익명함수
+
+react에는 함수가 대문자로 들어감
+
+- event 선언 주의 사항
+  함수를 넣어주는 것 이지 호출해주는 개념이 아님
+  -> 랜더링 될 때 함수가 호출이 되어버림
+  html의 경우 함수를 호출해주기도 하는데 react는 그렇지 않음
+
+- 배열 비구조 할당, 비구조로 useState 배열 생성
+
+```jsx
+const [number, setNumber] = useState(0);
+```
+
+- useState
+
+바뀌는 값 관리 가능
+
+파라미터로 사용
+
+배열 반환
+
+첫번째 원소 : 바뀌는 값
+두번째 원소 : 함수
+
+- 함수형 업데이트를 사용
+  로직을 정의하는 함수 사용 가능
+  update 함수를 사용가능 -> **최적화**와 관련 있음
+  ```jsx
+  setNumber((preNum) => preNum - 1);
+  ```
+
+### react input 상태 관리
+
+e.target : 이벤트가 발생한 돔에 대한 값을 가지고 있음
+e.target.value 로 선언시 값을 볼 수 있게 됨
+
+함수를 여러개 사용하고 useState의 첫번째 인자가 게속 최신화가 되게 하는 방법은
+e를 사용한 파라미터 부분에 value 값을 설정해 주면 된다.
+
+```jsx
+<input onChange={onChange} value={text} />
+```
+
+#### 여러개의 input 상태 관리
+
+useState 여러개 선언하거나 그 때마다 함수를 생성한다고 생각 할 수 있지만
+그런 개념이 아니고 객체를 선언하여 추출하여 사용하는 방법이 더 효율적 이다
+
+- react 객체 update 방법
+
+name, value를 추출하고 선언
+불변성을 유지하면서 객체를 update 해줘야함
+객체 상태를 update할 때는 spread(...) 사용해서 update를 해줘야 함
+
+```jsx
+setInput({
+  ...input,
+  [name]: value,
+});
+```
+
+### useRef로 특성 DOM 선택하기
+
+함수 컴포넌트 ref -> useRef
+class -> createRef()
+
+class 나중에 -> 중요도 down
+
+input 예시로 들 때 focus가 초기화에 남아있는 걸 옮기고 싶다면
+
+1. useRef 선언
+   ```jsx
+   import React, { useState, useRef } from 'react';
+   ```
+2. useRef 호출
+   ```jsx
+   const nameInput = useRef();
+   ```
+3. 사용하고 싶은 곳에 ref={nameInput}
+
+### 배열 렌더링 하기
+
+javascript map
+
+arrary.map(기존배열)
+기존 배열을 다른 배열로 바꿔줌
+
+id 값이 존재 하지 않아서 key 값을 설정하지 못할 시
+map(1, 2) 2번째 값에 인덱스를 설정할 수 있는데 경고만 사라질 뿐 성능적 개선은 없음
+
+- key 의 역할
+  key 값을 사용하지 않으면 메모리적 낭비가 생기게 된다
+  자신이 몇번 째 인덱스인줄만 알지 값을 가지고 있는 것을 인식하지 못함
+
+### useRef로 컴포넌트 안의 변수 만들기
