@@ -8,28 +8,10 @@ function User({ user }) {
   );
 }
 
-function UserList() {
-  const users = [
-    {
-      id: 1,
-      username: 'jang',
-      email: 'wshmin@naver.com',
-    },
-    {
-      id: 2,
-      username: 'hi',
-      email: 'good@naver.com',
-    },
-    {
-      id: 3,
-      username: 'bye',
-      email: 'bye@naver.com',
-    },
-  ];
-
+function UserList({ user }) {
   return (
     <div>
-      {users.map((user) => (
+      {user.map((user, index) => (
         <User user={user} key={user.id}></User>
       ))}
     </div>
