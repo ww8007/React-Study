@@ -16,6 +16,9 @@ Component -> ouput 개념을 만들어줌
 
 pwd 현재 경로 탐색
 
+- react 프로젝트 생성
+  npx create-react-app begin-react
+
 ### 컴포넌트 생성
 
 ```js
