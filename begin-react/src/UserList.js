@@ -1,18 +1,20 @@
 import React from 'react';
 
-function User({ user }) {
+function User({ user, onRemove }) {
+  const { username, email, id } = user;
   return (
     <div>
-      <b>{user.username}</b> <span>{user.email}</span>
+      <b>{username}</b> <span>{email}</span>
+      <button onClick={() => onRemove(id)}>삭제</button>
     </div>
   );
 }
 
-function UserList({ user }) {
+function UserList({ user, onRemove }) {
   return (
     <div>
       {user.map((user, index) => (
-        <User user={user} key={user.id}></User>
+        <User user={user} key={user.id} onRemove={onRemove}></User>
       ))}
     </div>
   );
