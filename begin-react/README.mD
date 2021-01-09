@@ -19,6 +19,8 @@ pwd 현재 경로 탐색
 - react 프로젝트 생성
   npx create-react-app begin-react
 
+### 기본 적 틀
+
 ### 컴포넌트 생성
 
 ```js
@@ -311,6 +313,8 @@ onCreate 함수가 호출되어야만 값이 변하게 된다.
 
 - useRef의 값이 바뀌어도 component가 알지 못함
 
+### 배열에 항목 추가하기
+
 배열 추가 방법
 
 push sort 사용 불가
@@ -329,3 +333,34 @@ push sort 사용 불가
 2. concat 함수 사용
    배열 여러개를 하나의 배열로 합쳐줌
    하지만 새로운 배열이 생기게 되지는 않음
+   ```jsx
+   setUsers(users.concat(user));
+   setInputs({
+     username: '',
+     email: '',
+   });
+   ```
+
+### 배열에서 항목 제거하기
+
+user. 이 계속 쓰기 불편하다면
+
+```jsx
+const { username, email, id } = user;
+```
+
+위와 같이 추출해서 사용
+
+```jsx
+<button onClick={() => onRemove(id)}>삭제</button>
+```
+
+삭제 함수 생성
+
+배열에서 불변성 유지하면서 항목 삭제
+-> filter 함수
+항목
+
+```jsx
+const thing = todos.filter((todo) => todo.done === false);
+```
