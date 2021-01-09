@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import './App.css';
+import CreateUsers from './CreateUsers';
+import UserLists from './UserLists';
 
 function App() {
   const [input, setInputs] = useState({
@@ -9,7 +11,7 @@ function App() {
   const { id, pw } = input;
   const onChange = (e) => {
     const { name, value } = e.target;
-    onChange({
+    setInputs({
       ...input,
       [name]: value,
     });
@@ -47,7 +49,17 @@ function App() {
     });
     nextId.current += 1;
   };
-  return <div></div>;
+  return (
+    <>
+      <CreateUsers
+        id={id}
+        pw={pw}
+        onChange={onChange}
+        onCreate={onCreate}
+      ></CreateUsers>
+      <UserLists user={users}></UserLists>
+    </>
+  );
 }
 
 export default App;
