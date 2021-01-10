@@ -308,13 +308,14 @@ onCreate 함수가 호출되어야만 값이 변하게 된다.
 
 - useRef의 값이 바뀌어도 component가 알지 못함
 
-배열 추가 방법
+### 배열 항목 추가하기 방법
 
 push sort 사용 불가
 
 1. spread 연산자 사용
-   ...
+   ...users
    기존 배열은 수정하지 않으면서 복사해서 사용
+
    ```jsx
    const user = {
      id: nextId.current,
@@ -323,6 +324,108 @@ push sort 사용 불가
    };
    setUsers([...users, user]);
    ```
+
 2. concat 함수 사용
    배열 여러개를 하나의 배열로 합쳐줌
    하지만 새로운 배열이 생기게 되지는 않음
+
+### 배열 항목 제거하기
+
+onClick 함수 생성
+
+바로 파라미터 받아 올 수 있도록
+
+```js
+<button onClick={() => onRemove(id)}>삭제</button>
+```
+
+위와 같이 안하고
+
+```js
+<button onClick={onRemove(id)}>삭제</button>
+```
+
+이렇게 선언하게 되면 랜더링 될 때 호출
+-> 안 할경우 생성도 안되고 랜더링 될 때 모두 사라져 버림
+
+- 불변성을 지켜가면서 새로운 배열을 생성하는 법
+  filter
+  filter 값이 만족하는 값만을 추출하게 됨
+  ```js
+  const onRemove = (id) => {
+    setUsers(users.filter((user) => user.id !== id));
+  };
+  ```
+
+### 배열 항목 수정하기
+
+&nbsp; 공백생성
+
+map 함수를 여기서도 사용 가능
+
+배열에 있는 특정 item update 할 때에도 사용 가능
+
+```js
+const onToggle = (id) => {
+  setUsers(
+    users.map((user) =>
+      user.id === id ? { ...user, active: !user.active } : user,
+    ),
+  );
+};
+```
+
+특정 객체를 수정해야 할 때 ...user 생성 후
+user 값을 입력시켜주고 덮어씌워줌
+
+- user.id === id -> user 복사 생성 후 active 값 반전
+- user.id !== id -> 그냥 user 출력
+
+### useEffect Hook
+
+첫번 째 파라미터 : 함수
+두번 째 파라미터 : deps
+반환 함수 : 뒷 정리 전 호출 (cleaner 함수)
+조회하거나 봐야할 함수 : deps에 호출
+
+화면에 나타나거나 사라질 때, props의 상태가 변경 될 때
+리렌더링 될 때 이벤트를 줄 수 잇음
+useEffect의 deps(배열)의 값에 어떠한 값을 넣게 되면 해당 값이 바뀔 때 마다 등록한 함수가 호출 됨
+만약 useState나 파라미터 변경시 deps에 그 값을 넣어주어야 함
+-> 최신의 값을 가르켜줌
+
+- deps를 써주지 않으면 브라우저 상에는 표시가 되지 않지만 virtual dom 에서의 모든 작업들이 렌더링이 됨
+  -> 항목들이 많아질 경우 문제가 될 수 있음
+
+1. mount, unmount 시 에만 변경
+
+```jsx
+useEffect(() => {
+  console.log('컴포넌트가 화면에 나타남');
+  return () => {
+    console.log('컴포넌트가 화면에서 사라짐');
+  };
+}, []);
+```
+
+2. update 시에 변경
+
+```jsx
+useEffect(() => {
+  console.log(user);
+}, [user]);
+```
+
+1. mount
+
+- props -> state
+- 외부 API 요청
+  REST API
+- 라이브러리 사용
+  D3 Video.js
+- setInterval, setTimeout
+
+2. unmount(cleaner 함수)
+
+- clearInterval, clearTimeout
+- 라이브러리 인스턴스 제거
