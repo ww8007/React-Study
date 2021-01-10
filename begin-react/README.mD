@@ -429,3 +429,131 @@ useEffect(() => {
 
 - clearInterval, clearTimeout
 - 라이브러리 인스턴스 제거
+
+### useMemo Hook
+
+이전에 연산된 값을 다시 사용
+-> 성능 최적화에 사용
+
+```jsx
+const count = useMemo(() => countActiveUsers(users), [users]);
+```
+
+위 와 같이 선언하면 users가 update 될 때에만 호출 되게 됨
+
+### useCallback Hook
+
+1st parameter : 감싸야 할 파라미터
+2nd parameter : 바뀌어야 할 내용[deps]
+
+이 전에 만들었던 함수를 재사용 하게 됨
+useMemo와 비슷하지만 **함수**에 특화
+
+- 상태나 props를 deps에 선언하지 않는다면 최신화가 이루어지지 않음
+
+함수를 새로 선언하는 것은 메모리, cpu 적으로 부하적 문제는 없음
+-> 나중에 컴포넌트들이 리렌더링이 props가 바뀌지 않는다면 재사용 할 수 있게 구현 하기 위함
+-> 새로 만들어지는 구조라면 최적화를 하지 못함
+
+```jsx
+const onRemove = useCallback(
+  (id) => {
+    setUsers(users.filter((user) => user.id !== id));
+  },
+  [users],
+);
+```
+
+지금의 단계에서는 확실환 최적화는 없음
+
+### React.memo
+
+컴포넌트의 reredering 성능을 개선
+
+```jsx
+export default React.memo(CreateUser);
+```
+
+위 와 같이 감싸주기만 해도 최적화 첫 단계
+
+두 번째 단계 : useState의 함수형 update 사용
+
+- before
+
+```jsx
+const onRemove = useCallback(
+  (id) => {
+    setUsers(users.filter((user) => user.id !== id));
+  },
+  [users],
+);
+```
+
+- after
+
+```jsx
+const onRemove = useCallback((id) => {
+  setUsers((users) => users.filter((user) => user.id !== id));
+}, []);
+```
+
+onRemove는 첫 component가 rendering 될 때 빼고는 계속 재사용
+useMemo 2nd parameter
+아래와 같이 사용할 때는 변경되는 component가 진짜 고정적인 값인지 확인하고 사용해야 함
+심각한 오류 발생 가능
+
+```jsx
+export default React.memo(
+  UserList,
+  (prevProps, nextProps) => nextProps.users === prevProps.users,
+);
+```
+
+### 성능 최적화 주의점
+
+정말로 최적화가 가능한지 확인 하면서 memo, useCallback들을 확인해 봐야함
+적용을 하더라도 실행되는 부분이 많아진다면 정확한 최적화가 아닐 수 있음
+
+### useReducer Hook
+
+1st parameter : reducer 함수
+2nd parameter : 기본값(숫자, 문자, 객체, 배열)
+
+컴포넌트의 상태 update -> useState
+
+useReducer
+action 객체를 통한 update
+type 을 통해 명시
+
+- 상태 업데이트 로직을 컴포넌트 밖으로 분리 가능
+
+- reducer : 상태를 update 하는 함수
+  새로운 상태를 반환하게 됨
+
+```jsx
+function reducer(state, action) {
+  switch (action.type) {
+    case 'INCREMENT':
+      return state + 1;
+    case 'DECREMENT':
+      return state - 1;
+    default:
+      throw new Error('Unhandled error');
+  }
+}
+```
+
+- 비구조 할당을 통한 추출
+
+```jsx
+const [state, dispatch] = useReducer(reducer, initialState);
+const { users } = state;
+const { username, email } = state.inputs;
+```
+
+useReducer, useState
+
+장단점 존재
+
+component에서 관리하는 값이 여러개면 useReducer가 더 좋음
+간단 -> useState, 복잡 -> useReduce
