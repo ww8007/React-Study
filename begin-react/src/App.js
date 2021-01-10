@@ -21,16 +21,19 @@ function App() {
       id: 1,
       username: 'jang',
       email: 'wshmin@naver.com',
+      active: true,
     },
     {
       id: 2,
       username: 'hi',
       email: 'good@naver.com',
+      active: false,
     },
     {
       id: 3,
       username: 'bye',
       email: 'bye@naver.com',
+      active: false,
     },
   ]);
 
@@ -49,6 +52,19 @@ function App() {
     });
     nextId.current += 1;
   };
+
+  const onRemove = (id) => {
+    setUsers(users.filter((user) => user.id !== id));
+  };
+
+  const onToggle = (id) => {
+    setUsers(
+      users.map((user) =>
+        user.id === id ? { ...user, active: !user.active } : user,
+      ),
+    );
+  };
+
   return (
     <>
       <CreateUser
@@ -57,7 +73,7 @@ function App() {
         onChange={onChange}
         onCreate={onCreate}
       ></CreateUser>
-      <UserList user={users}></UserList>
+      <UserList user={users} onRemove={onRemove} onToggle={onToggle}></UserList>
     </>
   );
 }
