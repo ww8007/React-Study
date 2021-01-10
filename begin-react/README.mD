@@ -521,6 +521,10 @@ export default React.memo(
 
 컴포넌트의 상태 update -> useState
 
+- custom hook 생성 후 useReduce 사용 주의 사항
+  함수의 이름 use대문자 또는 Try 이렇게 들어가야지 아니면 오류가 발생
+  이유는 아직 모르겠음
+
 useReducer
 action 객체를 통한 update
 type 을 통해 명시
@@ -557,3 +561,59 @@ useReducer, useState
 
 component에서 관리하는 값이 여러개면 useReducer가 더 좋음
 간단 -> useState, 복잡 -> useReduce
+
+### Custom Hook 만들기
+
+component 생성 -> 반복되는 로직이 생김
+반복되는 로직을 hook로 생성
+use라는 이름으로 만들어서 함수를 명시
+
+```jsx
+import { useState, useCallback } from 'react';
+
+function useInputs(initialForm) {
+  const [form, setForm] = useState(initialForm);
+  const onChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setForm((form) => ({ ...form, [name]: value }));
+  }, []);
+  const reset = useCallback(() => setForm(initialForm), [initialForm]);
+
+  return [form, onChange, reset];
+}
+
+export default useInputs;
+```
+
+- Object.keys(obj) 키가 담긴 배열을 반환
+
+### Context API를 사용한 전역 값 관리
+
+component의 구조가 복잡해 졌을시 용이함
+
+1. const 변수명 = createContext('기본값'); 선언
+
+```jsx
+const Mycontext = createContext('defaultValue');
+```
+
+2. Mycontext.Provider를 통해 value 값 선언
+
+```jsx
+function ContextSample() {
+  return (
+    <Mycontext.Provider value="GOOD">
+      <GrandParent></GrandParent>
+    </Mycontext.Provider>
+  );
+}
+```
+
+3. Child -> useContext(Mycontext) 사용하여 사용 가능
+
+```jsx
+function Child() {
+  const text = useContext(Mycontext);
+  return <div>안녕하세요? {text}</div>;
+}
+```
