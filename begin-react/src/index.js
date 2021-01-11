@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-// import App from './App';
+import App from './App';
 import reportWebVitals from './reportWebVitals';
-import ContextSample from './ContextSample';
+
 // import Counter_reducer from './Counter_reducer';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ContextSample />
+    <App />
   </React.StrictMode>,
   document.getElementById('root'),
 );
