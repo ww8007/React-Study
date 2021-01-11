@@ -4,12 +4,13 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import Hello from './Hello';
+import Counter from './Counter_reducer';
 
 // import Counter_reducer from './Counter_reducer';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Hello name="react" isSpecial="true" />
+    <Counter />
   </React.StrictMode>,
   document.getElementById('root'),
 );
