@@ -16,6 +16,12 @@ Component -> ouput 개념을 만들어줌
 
 pwd 현재 경로 탐색
 
+### 'MODULE_NOT_FOUND' 오류
+
+1. rm -rf node_modules
+
+2. npm isntall
+
 ### 컴포넌트 생성
 
 ```js
@@ -595,6 +601,7 @@ component의 구조가 복잡해 졌을시 용이함
 
 ```jsx
 const Mycontext = createContext('defaultValue');
+export const UserDispatch = createContext(null);
 ```
 
 2. Mycontext.Provider를 통해 value 값 선언
@@ -616,4 +623,19 @@ function Child() {
   const text = useContext(Mycontext);
   return <div>안녕하세요? {text}</div>;
 }
+
+const dispatch = useContext(UserDispatch);
 ```
+
+4. 사용 하려는 부분에서 사용
+
+```jsx
+onClick={() =>
+          dispatch({
+            type: 'TOGGLE_USER',
+            id,
+          })
+        }
+```
+
+나중에 상태도 넣어서 관리가 가능
