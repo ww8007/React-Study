@@ -639,3 +639,196 @@ onClick={() =>
 ```
 
 나중에 상태도 넣어서 관리가 가능
+
+### immer 이용한 더 쉽게 불변성 유지
+
+1st par = state
+2nd par = draft(함수)
+
+```jsx
+const obj = {
+  a: 1,
+  b: 2,
+};
+const nextobj = {
+  ...obj,
+  b: 3,
+};
+```
+
+위와 같이 spread 연산자를 사용하는 것이 정확한 불변성 유지
+
+배열의 경우 : concat, filter, map
+
+- 상태가 복잡해지면 생각해야 할 것이 많아짐
+  어려운 것은 아니지만 코드가 복잡
+
+immer 사용하면 불변성 해쳐도 동작 가능
+
+- 개발자 도구에서 immer 사용법
+  ```jsx
+  window.produce = produce;
+  ```
+  사용법
+  ```jsx
+  const state = {
+  number : 1,
+  dontChangeMe:2
+  };
+  const nextStage = produce(state, draft => {
+  draft.number+=1;});
+  nextStage
+  {number: 2, dontChangeMe: 2}
+  ```
+
+기존의 상태는 유지하면서 (불변성 유지) 새롭게 생성
+immer를 사용한다고 해서 코드가 쉬워지는 것은 아님
+
+- immer에서는 splice 함수 사용하여 내용 삭제 가능함
+
+- immer를 사용하면 함수형 update를 더 깔끔하게 구현 가능
+
+- 첫번째 state 없고 draft만 선언하면 update형 함수로 구현 됨
+  useState 이용한 함수형 update를 작성해야 하는데 불변성을 유지해야 할 때 사용
+
+  ```jsx
+  const todo = {
+    text: 'Hello',
+    done: false,
+  };
+  const updater = producer((draft) => {
+    draft.done = !draft.done;
+  });
+  const nextTodo = updater(todo);
+
+  const [todo, setTodo] = useState({
+    text: 'Hello',
+    done: false,
+  });
+
+  const onClick = useCallback(() => {
+    setTodo(
+      produce((draft) => {
+        draft.done = !draft.done;
+      }),
+    );
+  }, []);
+  ```
+
+* immer를 무작정 사용하는 것이 아닌 필요한 곳에만 사용
+
+### class형 컴포넌트
+
+잘 사용하지 않음
+알아둘 필요는 있음 -> 유지보수할 일, 함수형, hooks로 못하는 일을 할 수 있음
+hooks 가 생기면서 class형 component는 좀 떨어짐
+
+- this를 특정 함수와 연결시켜주면 this의 개념을 잃어버리게 됨
+  -> 3가지 방법
+
+  1. constructor(props) 이용방법
+
+  ```jsx
+  constructor(props){
+    super(props);
+    this.handleIncrease = this.handleIncrease.bind(this);
+    this.handleDecrease = this.handleDecrease.bind(this);
+  }
+  ```
+
+  2. custom method 이용 화살표 함수
+
+  ```jsx
+  handleIncrease = () => {
+    console.log(this);
+    console.log('increase');
+  };
+  ```
+
+  - state는 무조건 객체 형태이여야 함
+    -> 다른 형식으로 선언 시 오류 남
+
+  3. state 바로 설정
+
+  ```jsx
+  state = {
+    counter: 0,
+  };
+  ```
+
+  spread나 따로 설정을 안해줘도 상태는 유지가 됨
+
+  - 상태에 들어있는 값이 객체이면 불변성 유지를 시켜줘야 함
+
+  CRA로 만든 프로젝트에서 많이 사용
+  cra: react
+
+setState 함수는 비동기적으로 update가 일어남
+
+```jsx
+this.setState((state) => ({
+  counter: state.counter + 1,
+}));
+```
+
+위와 같이 함수형 update를 사용해야 함
+
+### LifeCycle 메서드
+
+생명주기 메서드
+컴포넌트가 나타나고 update 사라질 때, 에러 호출 되는 메서드
+class 형 method에서만 나타남
+useEffect와 비슷
+
+- 메뉴얼을 보고 이해하고 사용할 줄 아는 정도로만 알아두면 됨
+
+메소드 호출
+![image](https://user-images.githubusercontent.com/54137044/104164779-ca5f9f00-543b-11eb-934d-4289d27742e4.png)
+
+1. 마운트
+
+- constructor
+  컴포넌트의 생성자 메서드
+  가장 먼저 실행
+- getDerivedStateFromProps
+  props로 받아온 것을 state에 넣어주고 싶을 때 사용
+  **static**이 필요 이 안에서는 **this** 조회 불가
+  특정 객체 반환 시 객체 안에 있는 모든 내용들이 **state**로 설정
+  처음 랜더링 되기 전에도 호출, 리렌더링 되기 전에도 매번 실행
+- render
+  컴포넌트를 랜더링 하는 메서드
+- componentDidMount
+  첫번째 렌더링이 마치고 나면 호출
+  사용자에게는 화면에 호출이 마친 상태
+  외부 라이브러리 연동을 하거나
+  컴포넌트에서 필요로 하는 데이터 요청 axios, fetch등을 통해 ajax요청
+  DOM의 속성을 읽거나 직접 변경하는 작업 진행
+
+2. 업데이트
+
+- getDerivedStateFromProps
+  props나 state가 바뀌었을 때도 메서드 호출
+- shouldComponentUpdate
+  리렌더링 할지 말지 결정
+  **최적화** 할때 사용하는 메서드
+  React.memo와 역할 비슷
+- render
+  컴포넌트를 랜더링 하는 메서드
+- getSnapshotBeforeUpdate
+  컴포넌트에 변화가 일어나기 직전의 DOM 상태를 가져와서 특정 값을 가져와
+  특정 값을 반환 시 다음 발생하는 **componentDidUpdate** 함수에서 받아와서 사용가능
+- componentDidUpdate
+  리렌더링이 마치고 화면에 우리가 원하는 변화가 모두 반영되고 난 뒤 호출되는 메서드
+  3번째 파리미터로 getSnapshotBeforeUpdate 에서 반환한 값을 조회 가능
+
+3. 언마운트
+
+컴포넌트가 화면에서 사라짐 의미
+
+- componentWillUnmount
+  화면에서 사라지기 전 호출
+  DOM에 직접 등록했었던 이벤트 제거
+  setTimeout 같은 것 존재한다면 clearTimeout 을 통해서 제거
+  외부 라이브러리를 사용한게 있고 라이브러리에 dispose 기능 존재하면 여기서 호출
+
+### componentDidCatch 메서드
