@@ -1,34 +1,16 @@
-import { useReducer, useCallback } from 'react';
-
-function reducer(state, action) {
-  //change
-  switch (action.type) {
-    case 'change':
-      return {
-        ...state,
-        [action.name]: action.value,
-      };
-    case 'reset':
-      return Object.keys(state).reduce((acc, current) => {
-        acc[current] = '';
-        return acc;
-      }, {});
-    default:
-      return state;
-  }
-  //reset
-}
+import { useState, useCallback } from 'react';
 
 function useInputs(initialForm) {
-  const [form, dispatch] = useReducer(reducer, initialForm);
+  const [form, setForm] = useState(initialForm);
+
   const onChange = useCallback((e) => {
     const { name, value } = e.target;
-    dispatch({ type: 'change', name, value });
+    setForm((form) => ({
+      ...form,
+      [name]: value,
+    }));
   }, []);
-  const reset = useCallback(() => {
-    dispatch({ type: 'reset' });
-  }, []);
-
+  const reset = useCallback(() => setForm(initialForm), [initialForm]);
   return [form, onChange, reset];
 }
 
