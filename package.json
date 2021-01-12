@@ -3,7 +3,9 @@
     "version": "1.0.0",
     "description": "React Study",
     "main": "index.js",
-    "dependencies": {},
+    "dependencies": {
+        "eslint-config-airbnb": "^18.2.1"
+    },
     "devDependencies": {
         "eslint": "^7.17.0",
         "eslint-config-prettier": "^7.1.0",
@@ -23,5 +25,11 @@
     "bugs": {
         "url": "https://github.com/ww8007/React-Study/issues"
     },
-    "homepage": "https://github.com/ww8007/React-Study#readme"
+    "homepage": "https://github.com/ww8007/React-Study#readme",
+    "eslintConfig": {
+        "extends": "[react-app, airbnb]"
+    },
+    "rules": {
+        "no-unused-vars": 1
+    }
 }
