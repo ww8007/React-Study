@@ -7,7 +7,7 @@ function App() {
     pw: '',
   });
   const { id, pw } = input;
-  const onChange;
+
   return <div></div>;
 }
 
