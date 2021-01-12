@@ -1,0 +1,58 @@
+$blue: #228be6; // 주석!
+$gray: #495057;
+$pink: #f06595;
+@mixin button-color($color) {
+    &.color {
+        background-color: $color;
+        &:hover {
+            background-color: lighten($color, 10%);
+        }
+        &:active {
+            background-color: darken($color, 10%);
+        }
+    }
+}
+
+.Button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    outline: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    //large
+    padding-left: 1rem;
+    padding-right: 1rem;
+    &.large {
+        height: 3rem;
+        font-size: 1.25rem;
+    }
+    //medium
+    &.medium {
+        height: 2.25rem;
+        font-size: 1rem;
+    }
+    //small
+    &.small {
+        height: 1.75rem;
+        font-size: 0.875rem;
+    }
+    &+& {
+        margin-left: 1rem;
+    }
+    &.blue {
+        @include button-color($blue);
+    }
+    &.gray {
+        @include button-color($gray);
+    }
+    &.pink {
+        @include button-color($pink);
+    }
+}
+
+// .Button+.Button {
+//     margin-left: 1rem;
+// }
