@@ -1,7 +1,6 @@
 import React from 'react';
 
 function User({ user }) {
-  if (!user) return null;
   return (
     <div>
       <div>
