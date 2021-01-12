@@ -833,9 +833,83 @@ useEffect와 비슷
 
 ### componentDidCatch 메서드
 
+1st par : error
+2nd par : info
+
 함수형 컴포넌트에서는 구현 불가
 
 에러는 개발환경에서만 표현 됨
 사용자에게 흰화면만 띄워주게 됨
 
 우리의 실수로 인해서 흰화면이 아닌 에러가 발생한 상황을 알려줌
+
+```jsx
+if (!user) return null;
+```
+
+위와 같이 예외 처리를 할 수 있음
+
+```jsx
+componentDidCatch(error, info) {
+    console.log('에러 발생');
+    console.log({
+      error,
+      info,
+    });
+    this.setState({
+      error: true,
+    });
+  }
+```
+
+### Sentry를 통한 에러를 실시간 탐지
+
+production 에서 componentDidCatch 사용시 에러 잡아내지 못함
+그렇게 되면 이렇게 선언
+
+```jsx
+if (process.env.NODE_ENV === 'production') {
+  Sentry.captureException(error, { extra: info });
+}
+```
+
+#### 서버 배포
+
+yarn build
+
+npx serve ./build
+
+서버를 로컬 호스트에서 열게 되면 map 파일 존재해서 minified 되서 참조 가능한데 로컬에서는 접근 못함
+
+map을 sentry에 업로드도 가능
+
+### Prettier 설정
+
+1. "trailingComma"
+   객체와 배열 선언 ,를 넣어주는 것
+2. "tabWidth"
+   들여쓰기 , 기본 값 : 4
+3. "semi"
+   세미콜론
+4. "singleQuote"
+   쌍 따옴표, 곁 따옴표
+
+### ESLint
+
+[link](npm install --save-dev eslint-config-react-app @typescript-eslint/eslint-plugin@^4.0.0 @typescript-eslint/parser@^4.0.0 babel-eslint@^10.0.0 eslint@^7.5.0 eslint-plugin-flowtype@^5.2.0 eslint-plugin-import@^2.22.0 eslint-plugin-jsx-a11y@^6.3.1 eslint-plugin-react@^7.20.3 eslint-plugin-react-hooks@^4.0.8)
+
+eslint 제외
+
+/_ eslint-disable _/
+추가(주석)
+
+### Snippet(코드 조각)
+
+기본적으로 내장
+단축어로 코드 생성
+
+직접 만들어서서 쓰는 걸 권장
+
+[Snippet](https://snippet-generator.app)
+
+파일 -> 기본설정 -> 사용자 코드 조각

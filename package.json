@@ -27,7 +27,7 @@
     },
     "homepage": "https://github.com/ww8007/React-Study#readme",
     "eslintConfig": {
-        "extends": "[react-app, airbnb]"
+        "extends": "[react-app, airbnb, prettier]"
     },
     "rules": {
         "no-unused-vars": 1
