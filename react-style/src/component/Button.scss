@@ -2,13 +2,20 @@ $blue: #228be6; // 주석!
 $gray: #495057;
 $pink: #f06595;
 @mixin button-color($color) {
-    &.color {
-        background-color: $color;
-        &:hover {
-            background-color: lighten($color, 10%);
-        }
-        &:active {
-            background-color: darken($color, 10%);
+    background-color: $color;
+    &:hover {
+        background-color: lighten($color, 10%);
+    }
+    &:active {
+        background-color: darken($color, 10%);
+    }
+    &.outline {
+        color: $color;
+        background: none;
+        border: 1px solid $color;
+        &.hover {
+            background: $color;
+            color: white;
         }
     }
 }
@@ -50,6 +57,14 @@ $pink: #f06595;
     }
     &.pink {
         @include button-color($pink);
+    }
+    &.fullWidth {
+        width: 100%;
+        justify-content: center;
+        &+& {
+            margin-left: 0;
+            margin-top: 1rem;
+        }
     }
 }
 
