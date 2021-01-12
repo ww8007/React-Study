@@ -16,6 +16,10 @@ Component -> ouput 개념을 만들어줌
 
 pwd 현재 경로 탐색
 
+```cmd
+npx create-react-app begin-react
+```
+
 ### 'MODULE_NOT_FOUND' 오류
 
 1. rm -rf node_modules
