@@ -163,3 +163,115 @@ setLoading 통해 로딩 끝남을 알림
   ```
 
 - button 형식으로 만들어주고 싶다면 만든 함수를 useEffect 밖으로 꺼내주면 된다.
+
+### useReducer로 요청 상태 관리하기
+
+처음 코드의 양은 늘어날 수 있음
+
+로직을 분리하여 나중에 사용가능
+
+- reducer 에서 swtich로 구현한 목록에 없을 시 state를 반환 시켜도 되지만 보통 error를 throw 한다
+
+- 장점 : 파일로 빼내서 사용 가능
+  reducer의 이름을 바꾼 뒤 리펙터링
+
+### useAsync 커스텀 Hook 만들어서 사용하기
+
+```jsx
+function useAsync(callback, deps = []) {}
+```
+
+callback -> api 호출 함수
+
+deps -> 어떤 값이 변경 되었을 때 api 재요청
+
+- useCallback 이용하여 재사용 가능하게 가능
+  ```jsx
+  const fetchData = useCallback(async () => {
+    dispatch({ type: 'LOADING' });
+    try {
+      const data = await callback();
+      dispatch({ type: 'SUCCESS', data });
+    } catch (e) {
+      dispatch({ type: 'ERROR', error: e });
+    }
+  }, [callback]);
+  ```
+
+사용자 요청이 있을 때만 수정 하는 법
+
+useEffect 부분에 if(skip) return
+
+```jsx
+useEffect(() => {
+      if (skip) {
+          return;
+      }
+
+```
+
+- 초기값이 잘못 설정되어 있으면 위의 오류는 없지만 위의 값이 불러와 지지 않는다.
+
+- 특정 par 불러와서 호출하고 싶은 경우
+  ```jsx
+  const [state] = useAsync(() => getUser(id), [id]);
+  ```
+  id 값이 바뀔 때 마다 getUser 함수를 호출하겠다는 의미
+
+```jsx
+import { useReducer, useEffect } from 'react';
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'LOADING':
+      return {
+        loading: true,
+        data: null,
+        error: null,
+      };
+    case 'SUCCESS':
+      return {
+        loading: false,
+        data: action.data,
+        error: null,
+      };
+    case 'ERROR':
+      return {
+        loading: false,
+        data: null,
+        error: action.error,
+      };
+    default:
+      throw new Error(`Unhandled action type: ${action.type}`);
+  }
+}
+
+function useAsync(callback, deps = [], skip = false) {
+  const [state, dispatch] = useReducer(reducer, {
+    loading: false,
+    data: null,
+    error: false,
+  });
+
+  const fetchData = async () => {
+    dispatch({ type: 'LOADING' });
+    try {
+      const data = await callback();
+      dispatch({ type: 'SUCCESS', data });
+    } catch (e) {
+      dispatch({ type: 'ERROR', error: e });
+    }
+  };
+
+  useEffect(() => {
+    if (skip) return;
+    fetchData();
+    // eslint 설정을 다음 줄에서만 비활성화
+    // eslint-disable-next-line
+  }, deps);
+
+  return [state, fetchData];
+}
+
+export default useAsync;
+```
