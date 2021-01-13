@@ -218,60 +218,52 @@ useEffect(() => {
   ```
   id 값이 바뀔 때 마다 getUser 함수를 호출하겠다는 의미
 
+reducer 파일만 따로 분리해서 사용해도 문제는 없지만
+컴포넌트 처럼 렌더링 시 데이터 요청을 해야하는 상황에는 useAsync hook을 만들어서
+useState도 대신 할 수 있게 하면 사용성이 좋아짐
+
+### react-async로 요청 상태 관리하기
+
+요청 상태 hook을 사용하기 귀찮다면 사용을 하면 됨
+
+yarn add react-async
+
+- 가장 기본적
+  useAsync
+  useFetch
+  Component로 사용가능(class)
+- Component children 자리에 함수를 넣어주는 것 -> react-router
+
+- useAsync 의 경우는 par 값들을 객체로 받아옴
+
 ```jsx
-import { useReducer, useEffect } from 'react';
-
-function reducer(state, action) {
-  switch (action.type) {
-    case 'LOADING':
-      return {
-        loading: true,
-        data: null,
-        error: null,
-      };
-    case 'SUCCESS':
-      return {
-        loading: false,
-        data: action.data,
-        error: null,
-      };
-    case 'ERROR':
-      return {
-        loading: false,
-        data: null,
-        error: action.error,
-      };
-    default:
-      throw new Error(`Unhandled action type: ${action.type}`);
-  }
-}
-
-function useAsync(callback, deps = [], skip = false) {
-  const [state, dispatch] = useReducer(reducer, {
-    loading: false,
-    data: null,
-    error: false,
-  });
-
-  const fetchData = async () => {
-    dispatch({ type: 'LOADING' });
-    try {
-      const data = await callback();
-      dispatch({ type: 'SUCCESS', data });
-    } catch (e) {
-      dispatch({ type: 'ERROR', error: e });
-    }
-  };
-
-  useEffect(() => {
-    if (skip) return;
-    fetchData();
-    // eslint 설정을 다음 줄에서만 비활성화
-    // eslint-disable-next-line
-  }, deps);
-
-  return [state, fetchData];
-}
-
-export default useAsync;
+const { data: user, error, isLoading } = useAsync({
+  promiseFn: getUser,
+  id,
+  watch: id,
+});
 ```
+
+deps 역할과 비슷하게 watch: id가 동작함
+
+loading -> isLoading
+fetch -> reload
+
+- 전 과 같이 버튼을 눌렀을 때 호출하게 만드는 법
+  ```jsx
+  const { data: users, error, isLoading, reload, run } = useAsync({
+    deferFn: getUsers,
+  });
+  ```
+  ```jsx
+  if (!users) return <button onClick={run}>불러오기</button>;
+  ```
+  1. promiseFn->deferFn
+  2. add run
+  3. button onClick -> run
+
+* 장점
+  필요할 때 설치하여 바로 사용가능
+  hook 아닌 component 사용가능
+* 단점
+  옵션이 복잡
