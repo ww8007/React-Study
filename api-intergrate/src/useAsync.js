@@ -29,11 +29,11 @@ export function reducer(state, action) {
   }
 }
 
-function useAsync(callback, deps = []) {
+function useAsync(callback, deps = [], skip = true) {
   const [state, dispatch] = useReducer(reducer, {
     loading: false,
     data: null,
-    error: null,
+    error: false,
   });
 
   const fetchData = useCallback(async () => {
@@ -47,6 +47,9 @@ function useAsync(callback, deps = []) {
   }, [callback]);
 
   useEffect(() => {
+    if (skip) {
+      return;
+    }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
