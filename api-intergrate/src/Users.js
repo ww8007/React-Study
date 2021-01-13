@@ -12,7 +12,7 @@ function Users() {
       setError(null);
       setLoading(true);
       const response = await axios.get(
-        'https://jsonplaceholder.typicode.com/users/',
+        'https://jsonplaceholder.typicode.com/users/adsf',
       );
       setUsers(response.data);
     } catch (e) {
