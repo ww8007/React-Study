@@ -4,6 +4,7 @@
     "description": "React Study",
     "main": "index.js",
     "dependencies": {
+        "axios": "^0.21.1",
         "eslint-config-airbnb": "^18.2.1"
     },
     "devDependencies": {
