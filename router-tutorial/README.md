@@ -1,11 +1,12 @@
---- 
-title: [Markdown}"SPI STUDY"
-output:
-   html_document :
-   toc : true
----
-
 # SPI
+
+- [SPI 단점](#SPI-단점)
+- [기본설정(Browser Router)](#기본설정)
+- [경로 설정](#경로-설정)
+- [Memory Router](#memory-router)
+- [파라미터와 쿼리](#파라미터와-쿼리)
+- [서브 라우트 만들기](#서브-라우트-만들기)
+- [리액트 라우터 부가기능](#리액트-라우터-부가기능)
 
 ### SPI 단점
 
@@ -36,7 +37,7 @@ Next.js - 엄청나게 쉽게 구현 가능
 6. Link
    사용한 Router의 주소를 바꿈 a 태그지만 새로고침 안됨
 
-### 기본설정(Browser Router)
+### 기본설정
 
 1. yarn add react-router-dom
 2. index.js
@@ -120,3 +121,50 @@ import { Memory Router } from 'react-router-dom';
 
 - 추출하는 법
   1.  yarn add qs
+  2.  ```jsx
+      import qs from 'qs';
+      ```
+  3.  파싱하기
+      물음표가 표시 되어있기 때문에 파싱 사용
+      물음표 삭제 -> ignoreQueryPrefix
+      ```jsx
+      const query = qs.parse(location.search, {
+        ignoreQueryPrefix: true,
+      });
+      ```
+  4.  특정 정보 삽입
+      ```jsx
+      const detail = query.detail === 'true';
+      ```
+      - 문자열을 통한 비교를 해줘야 함
+      ```jsx
+      {
+        detail && <p>detail 값이 true 입니다.</p>;
+      }
+      ```
+
+### 서브 라우트 만들기
+
+- render 장점
+  const로 다른 무언가를 선언을 시켰을 때 바로 표시가 가능
+  문자로 바로 표현이 가능해서 용이함
+- 용도
+  특정 경로에 tab이 있는 경우 사용 가능
+  목록들 나타내기 최적화
+
+- 사용법
+  ```jsx
+    <Route
+       path="/profiles"
+       exact
+       render={() => <div>사용자를 선택해주세요</div>}
+     ></Route>
+     <Route path="/profiles/:username" component={Profile} />
+  ```
+
+### 리액트 라우터 부가기능
+
+1. history 객체
+   route로 사용되는 객체에게 props로 전달
+   router로 직접 접근 가능
+   이동, 이탈 방지
