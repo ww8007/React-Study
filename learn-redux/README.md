@@ -6,6 +6,8 @@
 - [사용되는키워드숙지]-(#사용되는-키워드-숙지)
 - [리덕스 3가지 규칙](#리덕스-3가지-규칙)
 - [사용 준비](#사용-준비)
+- [액션 함수 생성](#액션-함수-생성)
+- [리덕스 모듈 만들기](#리덕스-모듈-만들기)
 
 # 개념
 
@@ -164,3 +166,50 @@ yarn add redux
     ```
 
 - console 창에 띄우주기 -> window.store = store;
+
+### 리덕스 모듈 만들기
+
+액션 타입, 액션 생성 함수, reducer
+
+- Ducks 패턴
+  한 파일에 몰아서 생성
+  reducer -> export default
+  편함, 배우는 과정에서 좋음
+
+DUCKS 패턴 특정
+
+- 액션타입
+  액션 타입 앞에 문자열 앞 접두사 -> 다른 모듈과 이름 차별화
+- 액션 생성 함수
+  앞에 **export** 선언
+
+- CombineReducers 호출
+
+  1.  make -> root reducer
+      ```jsx
+      import { CombineReducers } from 'redux';
+      ```
+  2.  combine
+      ```jsx
+      const rootReducer = combineReducers({
+        counter,
+        todos,
+      });
+      ```
+  3.  yarn add react-redux
+  4.  index.js
+      ```jsx
+      import { Provider } from 'react-redux';
+      import { createStore } from 'redux';
+      import rootReducer from './modules';
+      ```
+      - modules 디렉토리만 불러와서 root reducer를 export 시켜줬기에 사용 할 수 있다.
+      ```jsx
+      const store = createStore(rootReducer);
+      ```
+  5.  Provider로 감싸기
+      ```jsx
+      <Provider store={store}>
+        <App />
+      </Provider>
+      ```
