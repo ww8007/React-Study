@@ -7,6 +7,10 @@
 - [파라미터와 쿼리](#파라미터와-쿼리)
 - [서브 라우트 만들기](#서브-라우트-만들기)
 - [리액트 라우터 부가기능](#리액트-라우터-부가기능)
+- [history 객체](#history-객체)
+- [withRouter](#withRouter)
+- [Switch](#switch)
+- [useReactRouter Hook 사용하기](#usereactrouter-hook-사용하기)
 
 ### SPI 단점
 
@@ -162,9 +166,116 @@ import { Memory Router } from 'react-router-dom';
      <Route path="/profiles/:username" component={Profile} />
   ```
 
-### 리액트 라우터 부가기능
+## 리액트 라우터 부가기능
 
-1. history 객체
-   route로 사용되는 객체에게 props로 전달
-   router로 직접 접근 가능
-   이동, 이탈 방지
+### history 객체
+
+route로 사용되는 객체에게 props로 전달
+router로 직접 접근 가능
+이동, 이탈 방지
+
+- Object
+
+  1.  action -> 라우터에서 가장 마지막으로 발생한 액션
+      이동 -> push
+      뒤로가기, 앞으로 가기 -> pop
+  2.  block -> 사용자가 페이지에서 이탈 방지
+
+      ```jsx
+      useEffect(() => {
+        console.log(history);
+        const unblock = history.block('정말 떠나실 건가요?');
+        return () => {
+          unblock();
+        };
+      }, [history]);
+      ```
+
+      페이지에서 무언가를 작성하고 있다가 나가려 할 때 물어보는 용도로 사용
+
+  3.  createHref -> location 같은 형태의 객체를 가지고 주소를 만드는 역할
+  4.  go -> -1 뒤로 1 앞으로
+      goback go Forward 비슷
+  5.  replace -> 방문기록을 남기지 않음
+
+### withRouter
+
+라우터 컴포넌트가 아닌 곳에서
+match, location, history 사용가능
+라우터로 선언되지 않은 곳에서 특정 경로롤 이동할 때 사용
+-> 로그인 성공
+
+- JSON.stringfy
+
+```jsx
+<textarea value={JSON.stringify(location, null, 2)}></textarea>
+```
+
+위와 같이 선언하면 들여쓰기 가능
+
+- 랜더링 된 match 기준으로 params를 받아옴
+- location의 경우는 어디서 받아오든 경우
+
+### Switch
+
+여러 라우트 중 하나만 보여줌
+
+exact가 존재 하지 않는 경우 하나만 보여줌
+
+- 페이지를 못찾았을 때 사용
+  not found -> 404
+  ```jsx
+  <Route
+    render={({ location }) => (
+      <div>
+        <h2>이 페이지는 존재하지 않습니다.</h2>
+        <p>{location.pathname}</p>
+      </div>
+    )}
+  />
+  ```
+
+### NavLink
+
+현재 주소와 일치한다면 스타일 바꾸기
+
+```jsx
+<li>
+  <NavLink
+    to="/profiles/homer"
+    activeStyle={{ background: 'black', color: 'white' }}
+  >
+    homer
+  </NavLink>
+</li>
+```
+
+- className으로 확인하고 싶을 시
+  -> activeClassName="active"
+
+* isActive
+  1st match
+  2nd location
+  return match.params.blbla = 'asdf';
+
+* Prompt
+  historyblock -> Component로 구현
+
+* Redirect
+  랜더링 하는 순간 다른 경로로 이동
+  history와 같은 기능
+  Component
+
+* RoutConfig
+  routes 배열 생성
+  한번에 생성
+  view, angular의 경우 사용
+
+[reactrouter](https://reactrouter.com/)
+
+### useReactRouter Hook 사용하기
+
+정식 개념은 아님
+
+- 설치
+  yarn add use-react-router
