@@ -1,3 +1,10 @@
+--- 
+title: [Markdown}"SPI STUDY"
+output:
+   html_document :
+   toc : true
+---
+
 # SPI
 
 ### SPI 단점
@@ -29,7 +36,7 @@ Next.js - 엄청나게 쉽게 구현 가능
 6. Link
    사용한 Router의 주소를 바꿈 a 태그지만 새로고침 안됨
 
-### 기본설정
+### 기본설정(Browser Router)
 
 1. yarn add react-router-dom
 2. index.js
@@ -42,3 +49,74 @@ Next.js - 엄청나게 쉽게 구현 가능
      <App />
    </BrowserRouter>
    ```
+4. 선언
+
+   ```jsx
+   <Route path="/" component={Home} />
+   <Route path="/about" component={About} />
+   ```
+
+   - 위와 같이 선언하면 브라우저의 about이라는 경로가 /, /about에도 일치해서 두개에서 나옴
+     -> ```jsx
+     <Route path="/" component={Home} exact/>
+
+     ```
+
+     ```
+
+### 경로 설정
+
+a 테그 사용 금지
+
+```jsx
+<div>
+  <ul>
+    <li>
+      <Link to="/">홈</Link>
+    </li>
+    <li>
+      <Link to="/about">소개</Link>
+    </li>
+  </ul>
+  <hr></hr>
+  <Route path="/" component={Home} exact />
+  <Route path="/about" component={About} />
+</div>
+```
+
+### Memory Router
+
+index.js에서 수정
+
+```jsx
+import { Memory Router } from 'react-router-dom';
+```
+
+### 파라미터와 쿼리
+
+1. 파라미터
+
+- Parameter
+  /profiles/jang
+  정해진 특정 데이터 조회
+- Query
+  /filter?type=book&sor_by=date
+  검색에 사용
+
+- 컴포넌트를 라우터로 사용하게 된다면 match 값이 자동으로 받아와 진다.
+  match params 추출 조회
+  ```jsx
+  const { username } = match.params;
+  ```
+  App js 에서 설정한 ```jsx
+  <Route path="/profiles/:username">
+  ```
+  위 의 코드가 match.params로 동작하게 됨
+  ```
+
+2. 쿼리
+
+- props를 통해 location을 받아옴
+
+- 추출하는 법
+  1.  yarn add qs
