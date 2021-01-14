@@ -213,3 +213,22 @@ DUCKS 패턴 특정
         <App />
       </Provider>
       ```
+
+### 카운터 구현
+
+- 프리젠테이셔널 컴포넌트
+  리덕스 스토어에 직접적으로 접근하지 않고 필요한 값 또는 함수를 props로만 받아와서 사용하는 컴포넌트
+- input의 value는 문자열 -> 숫자로 변환
+
+  ```jsx
+  onSetDiff(parseInt(e.target.value, 10));
+  ```
+
+  UI 중점적 -> 프리젠테이셔널 컴포넌트
+
+- containers
+  리덕스 상태 조회, action -> dispatch 컴포넌트
+  1. useSelector 선언
+     ```jsx
+     import { useSelector } from 'react-redux';
+     ```
