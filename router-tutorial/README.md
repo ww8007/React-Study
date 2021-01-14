@@ -42,7 +42,8 @@ Next.js - 엄청나게 쉽게 구현 가능
    라우트를 정의할 때 사용하는 컴포넌트
 6. Link
    사용한 Router의 주소를 바꿈 a 태그지만 새로고침 안됨
-   [[↑] Back to top](#목차)
+
+[[↑] Back to top](#목차)
 
 ### 기본설정
 
@@ -72,7 +73,7 @@ Next.js - 엄청나게 쉽게 구현 가능
 
            ```
 
-      [[↑] Back to top](#목차)
+[[↑] Back to top](#목차)
 
 ### 경로 설정
 
@@ -146,7 +147,8 @@ import { Memory Router } from 'react-router-dom';
   4.  특정 정보 삽입
       `jsx const detail = query.detail === 'true'; ` - 문자열을 통한 비교를 해줘야 함
       `jsx { detail && <p>detail 값이 true 입니다.</p>; } `
-      [[↑] Back to top](#목차)
+
+[[↑] Back to top](#목차)
 
 ### 서브 라우트 만들기
 
@@ -166,7 +168,8 @@ import { Memory Router } from 'react-router-dom';
      ></Route>
      <Route path="/profiles/:username" component={Profile} />
   ```
-  [[↑] Back to top](#목차)
+
+[[↑] Back to top](#목차)
 
 ## 리액트 라우터 부가기능
 
@@ -199,7 +202,8 @@ router로 직접 접근 가능
   4.  go -> -1 뒤로 1 앞으로
       goback go Forward 비슷
   5.  replace -> 방문기록을 남기지 않음
-      [[↑] Back to top](#목차)
+
+[[↑] Back to top](#목차)
 
 ### withRouter
 
@@ -237,7 +241,8 @@ exact가 존재 하지 않는 경우 하나만 보여줌
     )}
   />
   ```
-  [[↑] Back to top](#목차)
+
+[[↑] Back to top](#목차)
 
 ### NavLink
 
@@ -284,4 +289,5 @@ exact가 존재 하지 않는 경우 하나만 보여줌
 
 - 설치
   yarn add use-react-router
-  [[↑] Back to top](#목차)
+
+[[↑] Back to top](#목차)
