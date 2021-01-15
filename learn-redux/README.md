@@ -8,6 +8,8 @@
 - [사용 준비](#사용-준비)
 - [액션 함수 생성](#액션-함수-생성)
 - [리덕스 모듈 만들기](#리덕스-모듈-만들기)
+- [카운터 구현](#카운터-구현)
+- [리덕스 개발자 도구 적용하기](#리덕스-개발자-도구-적용하기)
 
 # 개념
 
@@ -270,7 +272,71 @@ DUCKS 패턴 특정
   ```
 
 * dispatch
+
   ```jsx
   const onIncrease = () => dispatch(increase());
   ```
+
   액션 생성 함수 호출이 되면 객체 생성 후 dispatch
+
+* 정리 개념
+  presentation component : UI (Props 전달 받아 변경)
+  container component : 상태
+
+  redux stores : action dispatch
+
+  꼭 구분 지어서 컴포넌트를 분리 할 필요 없다.
+  -> 지금의 프로젝트들은 이것을 정석으로 둠
+
+### 리덕스 개발자 도구 적용하기
+
+현재 까지 어떤 action dispatch -> 상태 바뀌었는지
+바로 dispatch도 적용 가능
+
+yarn add redux-devtools-extension
+
+1. index.js
+   ```jsx
+   import { composeWithDevTools } from 'redux-devtools-extension';
+   const store = createStore(rootReducer, composeWithDevTools());
+   ```
+2. 크롬에서 사용
+
+### 할 일 목록 구현하기
+
+1. TodoItem
+   할 일 하나 보여주기
+
+   - style
+     ```jsx
+         <li style={{
+         textDecoration: todo.done ? 'line-through' : 'none'
+     }}
+     ```
+   - click
+     ```jsx
+     onClick={()=> onToggle(todo.id)}
+     ```
+     todo id를 통해 onToggle 호출
+
+   * nav
+     todo text 호출
+
+2. TodoList
+   여러개의 할 일 항목
+   - map 함수 이용
+     ```jsx
+     {
+       todos.map((todo) => (
+         <TodoItem key={todo.id} todo={todo} onToggle={onToggle}></TodoItem>
+       ));
+     }
+     ```
+3. Todos
+   새 항목 등록 폼
+   - onSubmit
+     이벤트 객체 선언 후 **preventDefault()**
+     -> 새로 고침을 안하게 해줌
+
+- 리덕스를 사용한다고 해서 모든 상태를 redux에서 사용하지 않음
+  컴포넌트 내부에서 local로 useState hook을 사용해 관리 가능
