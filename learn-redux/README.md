@@ -340,3 +340,21 @@ yarn add redux-devtools-extension
 
 - 리덕스를 사용한다고 해서 모든 상태를 redux에서 사용하지 않음
   컴포넌트 내부에서 local로 useState hook을 사용해 관리 가능
+
+4. TodosContainer
+   props 필요 x
+   ctrl+space 바로 불러오기 가능
+   - useSelector -> 상태 조회
+     ```jsx
+     const todos = useSelector((state) => state.todos);
+     ```
+   - useDispatch -> dispatch 사용
+     ```jsx
+     const dispatch = useDispatch();
+     ```
+   * dispatch 해주기 -> 객체 생성
+     ```jsx
+     const onCreate = (text) => dispatch(addTodo(text));
+     const onToggle = (id) => dispatch(toggleTodo(id));
+     ```
+   * useCallback으로 최적화
