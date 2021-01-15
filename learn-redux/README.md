@@ -264,6 +264,13 @@ DUCKS 패턴 특정
 
 * useDistpatch
   dispatch 함수 만들어서 바로 사용 가능
+
   ```jsx
   const dispatch = useDispatch();
   ```
+
+* dispatch
+  ```jsx
+  const onIncrease = () => dispatch(increase());
+  ```
+  액션 생성 함수 호출이 되면 객체 생성 후 dispatch
