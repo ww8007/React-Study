@@ -228,7 +228,42 @@ DUCKS 패턴 특정
 
 - containers
   리덕스 상태 조회, action -> dispatch 컴포넌트
+
   1. useSelector 선언
      ```jsx
      import { useSelector } from 'react-redux';
      ```
+  2. 객체로 선언
+     ```jsx
+     const { number, diff } = useSelector((state) => ({
+       number: state.counter.number,
+       diff: state.counter.diff,
+     }));
+     ```
+  3. 불러와서 사용
+     ```jsx
+     <Counter
+       number={number}
+       diff={diff}
+       onIncrease={onIncrease}
+       onDecrease={onDecrease}
+       onSetDiff={onSetDiff}
+     ></Counter>
+     ```
+
+* useSelector
+
+  ```jsx
+  const { number, diff } = useSelector((state) => ({
+    number: state.counter.number,
+    diff: state.counter.diff,
+  }));
+  ```
+
+  객체에서 number,diff 값 객체로 빼와서 사용
+
+* useDistpatch
+  dispatch 함수 만들어서 바로 사용 가능
+  ```jsx
+  const dispatch = useDispatch();
+  ```
