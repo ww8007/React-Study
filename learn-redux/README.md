@@ -10,6 +10,9 @@
 - [리덕스 모듈 만들기](#리덕스-모듈-만들기)
 - [카운터 구현](#카운터-구현)
 - [리덕스 개발자 도구 적용하기](#리덕스-개발자-도구-적용하기)
+- [할 일 목록 구현하기](#할-일-목록-구현하기)
+- [useSelector 최적화](#useselector-최적화)
+- [connect HOC 함수를 통해 클래스형 컴포넌트에서 리덕스 연동하기](#connect-hoc-함수를-통해-클래스형-컴포넌트에서-리덕스-연동하기)
 
 # 개념
 
@@ -358,3 +361,47 @@ yarn add redux-devtools-extension
      const onToggle = (id) => dispatch(toggleTodo(id));
      ```
    * useCallback으로 최적화
+   * React.memo 최적화
+     Todos의 TodoItem, TodoList를 memo로 감싸줌
+     memo -> 재호출 되지 않도록 함 (리렌더링 될 때)
+     ```jsx
+       const TodoItem = React.memo(function TodoItem({ todo, onToggle })
+     ```
+
+### useSelector 최적화
+
+counter 동작 시켰을 때 todo 리렌더링 안되만
+반대의 경우 counter 리렌더링
+
+useSelector 문제 -> 매 번 새로운 객체를 만들어내고 잇음
+
+1. useSelector -> 여러번 선언
+   ```jsx
+   const number = useSelector((state) => state.counter.number);
+   const diff = useSelector((state) => state.counter.diff);
+   ```
+2. equalityFn (left, right 가져와서 비교)
+   - 객체의 경우 모든것을 비교 해줘야 함
+   ```jsx
+   const { number, diff } = useSelector(
+     (state) => ({
+       number: state.counter.number,
+       diff: state.counter.diff,
+     }),
+     (left, right) => {
+       return left.diff === right.diff && left.number === right.number;
+     },
+   );
+   ```
+3. equalityFn -> shallowEqual
+   - 주의점 : 객체 안의 모든 내용을 정확하게 비교하지 않음
+     불변성을 유지하면서 객체 값들을 수정했다면 문제가 되지 않음
+
+### connect HOC 함수를 통해 클래스형 컴포넌트에서 리덕스 연동하기
+
+- 사용도가 그리 높지 않음
+  함수형 컴포넌트로 작성하는 것이 우선시
+  옛날 컴포넌트, component did catch -> 에러 잡아내기
+- HOC
+  재사용 되는 값, 함수를 Props로 받아올 수 있게 해주는 옛날 패턴
+  -> Hook이 이 행동을 대체 가능
