@@ -1,9 +1,8 @@
 /* eslint-disable no-template-curly-in-string */
 export const createPromiseThunk = (type, promiseCreator) => {
-  const [SUCCESS, ERROR] = ['${type}_SUCCESS', '${type}_ERROR'];
-
+  const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
   return (param) => async (dispatch) => {
-    dispatch({ type });
+    dispatch({ type, param });
     try {
       const payload = await promiseCreator(param);
       dispatch({
@@ -21,9 +20,8 @@ export const createPromiseThunk = (type, promiseCreator) => {
 };
 
 export const handleAsyncActions = (type, key) => {
-  const [SUCCESS, ERROR] = ['${type}_SUCCESS', '${type}_ERROR'];
-  const reducer = (state, action) => {
-    //update
+  const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+  return (state, action) => {
     switch (action.type) {
       case type:
         return {
@@ -57,14 +55,14 @@ export const reducerUtils = {
     loading: true,
     error: null,
   }),
-  success: (data) => ({
-    data,
+  success: (payload) => ({
+    data: payload,
     loading: false,
     error: null,
   }),
   error: (error) => ({
     data: null,
     loading: false,
-    error,
+    error: error,
   }),
 };
