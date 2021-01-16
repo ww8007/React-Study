@@ -4,6 +4,8 @@
 
 - [개념](#개념)
 - [리덕스 프로젝트 생성](#리덕스-프로젝스-생성)
+- [리덕스 미들웨어 직접 작성해보기](#리덕스-미들웨어-직접-작성해보기)
+- [redux-logger 사용 및 미들웨어와 DevTools 함께 사용](#redux-logger-사용-및-미들웨어와-devtools-함께-사용)
 
 ### 개념
 
@@ -195,3 +197,69 @@ action -> middleware 사용할 때 전달하는 함수
           ? action(store.dispatch, store.getState)
           : next(action);
       ```
+
+### redux-logger 사용 및 미들웨어와 DevTools 함께 사용
+
+yarn add redux-logger
+
+1. index.js
+   logger import
+
+   ```jsx
+   import logger from 'redux-logger';
+   ```
+
+2. yarn add redux-devtools-extension
+3. index.js -> import composeWithDevTools
+   ```jsx
+   import { composeWithDevTools } from 'redux-devtools-extension';
+   ```
+4. composeWithDevTools로 applyMiddleware 감싸주기
+   ```jsx
+   const store = createStore(
+     rootReducer,
+     composeWithDevTools(applyMiddleware(logger)),
+   );
+   ```
+
+### redux-thunk
+
+많이 사용되는 라이브러리
+액션 객체가 아닌 **함수**를 디스패치 가능, 현재 상태 조회가능, 액션 디스패치 가능
+
+1. yarn add redux-thunk
+
+2. import ReduxThunk
+   ```jsx
+   import ReduxThunk from 'redux-thunk';
+   ```
+
+- ReduxThunk와 logger를 함께 사용시 주의점
+  logger가 맨 뒤로 가야함 -> 이렇게 안할시 logger가 함수도 action으로 간주
+
+3. ReduxThunk 사용
+
+   ```jsx
+   const store = createStore(
+     rootReducer,
+     composeWithDevTools(applyMiddleware(ReduxThunk, logger)),
+   );
+   ```
+
+4. thunk 함수 작성
+   - thunk 함수에서 getState 사용할 필요 없다면 생략해도 무관
+   - thunk 함수는 dispatch를 받아오는 부분 부터 시작 아래 코드 1 명시
+   - thunk 함수를 만들어주는 부분 = 2 -> thunk creator
+   ```jsx
+   export const increaseAsync = 2. () => 1. (dispatch) => {
+     setTimeout(() => {
+       dispatch(increase());
+     }, 1000);
+   };
+   ```
+   - CounterContainer dispatch 내용 수정
+   ```jsx
+   const onIncrease = () => {
+     dispatch(increaseAsync());
+   };
+   ```
