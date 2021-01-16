@@ -126,3 +126,72 @@ UI 적인 interface 보여주는 부분이라고 생각하면 됨
         onDecrase={onDecrase}
       ></Counter>
       ```
+
+### 리덕스 미들웨어 직접 작성해보기
+
+template 기본 구성
+
+```jsx
+const middleware = (stroe) => (next) => (action) => {
+  // 하고 싶은 작업
+};
+```
+
+- 함수형 전환
+
+```jsx
+function middleware(store) {
+  return function (next) {
+    return function (action) {
+      //하고 싶은 작업
+    };
+  };
+}
+```
+
+action -> middleware 사용할 때 전달하는 함수
+
+- next를 호출 하지 않는다면 action이 리듀서로 전달되지 않고 무시됨
+
+- 직접 middleware 작성
+  1. myLogger 선언
+     ```jsx
+     const myLogger = (store) => (next) => (action) => {};
+     ```
+     한꺼번에 가져오는 것이 아님
+  2. action을 다음 middle ware(없다면 result) or reducer 전달
+     ```jsx
+     const result = next(action);
+     ```
+  3. return result
+     container에서 dispatch 됬을 때 결과물을 바로 반환
+  4. index.js
+     applyMiddleWare 선언
+     ```jsx
+     import { createStore, applyMiddleware } from 'redux';
+     ```
+     - 선언한 myLogger -> applyMiddleware에 적용
+       ```jsx
+       const store = createStore(rootReducer, applyMiddleware(myLogger));
+       ```
+  5. action이 reduer에서 처리 되고 난 다음에 다음 상태를 가져와 콘솔에 출력
+     ```jsx
+     console.log('\t', store.getState());
+     ```
+  - 전과 후를 모두 보고 싶을 경우
+    ```jsx
+    const myLogger = (store) => (next) => (action) => {
+      console.log(action);
+      console.log('\tPrev', store.getState());
+      const result = next(action);
+      console.log('\tNext', store.getState());
+      return result;
+    };
+    ```
+    - action이 객체가 아닌 함수를 받아오게 만들 수 있음 -> thunk
+      ```jsx
+      const thunk = (store) => (next) => (action) =>
+        typeof action === 'function'
+          ? action(store.dispatch, store.getState)
+          : next(action);
+      ```
