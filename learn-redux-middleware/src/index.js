@@ -6,9 +6,14 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import rootReducer from './modules';
-import myLogger from './middlewares/myLogger';
+// import myLogger from './middlewares/myLogger';
+import logger from 'redux-logger';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
-const store = createStore(rootReducer, applyMiddleware(myLogger));
+const store = createStore(
+  rootReducer,
+  composeWithDevTools(applyMiddleware(logger)),
+);
 
 ReactDOM.render(
   <React.StrictMode>
@@ -19,7 +24,7 @@ ReactDOM.render(
   document.getElementById('root'),
 );
 
-// If you want to start measuring performance in your app, pass a function
+// If you want to start measuring performyance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
