@@ -426,4 +426,74 @@ yarn add redux-logger
                 };
                 ```
 
-          * case 부분 최적화
+          * switch case 부분 최적화
+            - type 부분 post, posts
+              배열 [key ] 사용해서 분류
+              ```jsx
+              case type:
+              return{
+                  ...state,
+                  [key]: reducerUtils.loading(),
+              }
+              ```
+              - handleAsyncActions 만든 것 사용
+                ```jsx
+                const getPostsReducer = handleAsyncActions(GET_POSTS, 'posts');
+                ```
+                ```jsx
+                export default function posts(state = initialState, action) {
+                  switch (action.type) {
+                    case GET_POSTS:
+                    case GET_POSTS_SUCCESS:
+                    case GET_POSTS_ERROR:
+                      return getPostsReducer(state, action);
+                    case GET_POST:
+                    case GET_POST_SUCCESS:
+                    case GET_POST_ERROR:
+                      return getPostReducer(state, action);
+                    default:
+                      return state;
+                  }
+                }
+                ```
+
+    5.  PostList 작성
+        - key 값과 title 값을 이용한 li list 작성
+        ```jsx
+        <ul>
+          {posts.map((post) => (
+            <li key={post.id}>{post.title}</li>
+          ))}
+        </ul>
+        ```
+    6.  PostListContainer 작성
+
+        1. useSelector 이용 data, loading, error 불러오기
+           ```jsx
+           const { data, loading, error } = useSelector(
+             (state) => state.posts.posts,
+           );
+           ```
+        2. hook 사용해서 dispatch 불러오기
+
+           - hook 사용해서 dispatch 불러왔기 때문에 useEffect의 deps로 dispatch 선언 해줘야 함 -> eslint 법칙 기준 없어도 무관
+
+           ```jsx
+           const dispatch = useDispatch();
+
+           useEffect(() => {
+             dispatch(getPosts());
+           }, [dispatch]);
+           ```
+
+### 라우터 연동, 특정 포스트 읽기
+
+yarn add react-router-dom
+
+react router dom 불러오기
+
+```jsx
+import { BrowserRouter } from 'react-router-dom';
+```
+
+Provider 감싸기
