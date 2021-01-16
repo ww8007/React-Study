@@ -263,3 +263,116 @@ yarn add redux-logger
      dispatch(increaseAsync());
    };
    ```
+
+### redux-thunk로 Promise 다루기
+
+1. api 생성(진짜 아님)
+   - sleep : n msec
+   ```jsx
+   const sleep = (n) => new Promise((resolve) => setTimeout(resolve, n));
+   ```
+2. posts 배열 생성 (객체)
+3. export 내용 작성
+
+   ```jsx
+   export const getPosts = async () => {
+     await sleep(500);
+     return posts;
+   };
+
+   export const getPostById = async (id) => {
+     await sleep(500);
+     return posts.find((post) => post.id === id);
+   };
+   ```
+
+4. modules posts.js 생성
+   api 요청시 요청이 진행중인 상태 성공시 데이터 상태, 실패 시 에러 상태 관리
+
+   1. api posts에 만든 가짜 api 불러오기
+      ```jsx
+      import * as postsAPI from '../api/posts';
+      ```
+   2. api 마다 액션 3개씩 생성
+      - 특정 요청이 시작 알림
+        ```jsx
+        const GET_POST = 'GET_POST';
+        ```
+      - 특정 요청 성공(dispatch 로딩 끝)
+        ```jsx
+        const GET_POSTS_SUCCESS = 'GET_POSTS_SUCCESS';
+        ```
+      * 요청 에러
+        ```jsx
+        const GET_POSTS_ERROR = 'GET_POSTS_ERROR';
+        ```
+   3. 액션 생성함수 생성 또는 thunk에서 액션 바로 dispatch 가능
+
+      ```jsx
+      export const getPosts = () => async (dispatch) => {
+        //요청 시작 알림
+        dispatch({ type: GET_POSTS });
+        //API 호출
+        try {
+          const posts = await postsAPI.getPosts();
+          //성공
+          dispatch({ type: GET_POSTS_SUCCESS, posts });
+        } catch (e) {
+          //실패
+          dispatch({ type: GET_POSTS_ERROR, error: e });
+        }
+      };
+      ```
+
+      - post 부분에는 id 값을 받아와서 적용
+
+      ```jsx
+      export const getPost = (id) => async (dispatch) => {
+        //요청 시작 알림
+        dispatch({ type: GET_POST });
+        //API 호출
+        try {
+          const posts = await postsAPI.getPost(id);
+          //성공
+          dispatch({ type: GET_POST_SUCCESS, posts });
+        } catch (e) {
+          //실패
+          dispatch({ type: GET_POST_ERROR, error: e });
+        }
+      };
+      ```
+
+   4. 처리해줄 reducer 작성
+      - 반복되는 함수 처리
+        lib에 asyncUtils 생성
+        - 모든 내용을 함수로 처리 장점
+          데이터의 기본값을 파라미터로 받아올 수 있음
+        ```jsx
+        export const reducerUtils = {
+          initial: (data = null) => ({
+            data,
+            loading: false,
+            error: null,
+          }),
+        };
+        ```
+        - loading 부분 prevState optional
+          로딩 함수 사용시 기존상태 가져오고 loading 값만 수정가능
+          **asyncUtils** 부분
+          ```jsx
+          loading: (prevState = null) => ({
+            data: prevState,
+            loading: true,
+            error: null,
+          });
+          ```
+          **posts** 부분
+          ```jsx
+          case GET_POSTS:
+          return {
+          ...state,
+          posts: reducerUtils.loading(state.posts.data)
+          };
+          ```
+        * thunk 부분 재사용 가능 createThunk 작성
+        * case 부분 최적화
