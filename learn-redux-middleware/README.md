@@ -8,6 +8,7 @@
 - [redux-logger 사용 및 미들웨어와 DevTools 함께 사용](#redux-logger-사용-및-미들웨어와-devtools-함께-사용)
 - [redux-thunk](#redux-thunk)
 - [redux-thunk로 Promise 다루기](#redux-thunk로-promise-다루기)
+- [포스트 리스트 구현하기](#--)
 
 ### 개념
 
@@ -497,3 +498,165 @@ import { BrowserRouter } from 'react-router-dom';
 ```
 
 Provider 감싸기
+
+- Post : Presentational Component
+
+* PostContainer 작성
+  useSelector와 useDispatch 이용
+
+  - useSelector -> 상태 최신화 (data, loading, error)
+    ```jsx
+    const { data, loading, error } = useSelector((state) => state.posts.post);
+    ```
+  - dispatch
+    ```jsx
+    const dispatch = useDispatch();
+    ```
+  - useEffect
+    ```jsx
+    useEffect(() => {
+      dispatch(getPost(post));
+    }, [postId, dispatch]);
+    ```
+
+* PostPage 작성
+  props -> match
+
+  - url par(문자열) 이므로 기존 id 값(정수)와 비교불가
+    자바스크립트 내장함수 **parseInt** 사용
+    ```jsx
+    const postId = parseInt(id, 10);
+    ```
+
+  * PostContainer 불러온 뒤 props로 postId 전달
+    ```jsx
+    return <PostContainer postId={postId}></PostContainer>;
+    ```
+
+* App.js에 router 작성
+
+* Link 사용
+  post 항목 클릭 시 다른 주소로 이동
+
+import reportWebVitals from './reportWebVitals';
+
+### 포스트 리스트 데이터 유지 및 포스트 데이터 초기화
+
+전의 코드는 같은 데이터를 다시 불러오고 불필요한 재로딩이 있음
+
+- 재로딩
+
+  1. 기존 데이터 존재하면 리로딩 x 하도록
+     useEffect 에서 데이터 x -> 행동 x
+     ```jsx
+     useEffect(() => {
+       if (data) return;
+       dispatch(getPosts());
+     }, [dispatch, data]);
+     ```
+  2. 현재상태에서는 loading 되면 초기화가 되도록 코드가 짜여있음
+
+     ```jsx
+     loading: (prevState = null) => ({
+     data: prevState,
+     loading: true,
+     error: null,
+     }),
+     ```
+
+     -> handleAsncActions에 par 하나 더 받아서 state[key ].data값이 존재하면 넣어주고 아니면 null 값 불러오게 설정
+
+     ```jsx
+     export const handleAsyncActions = (type, key, keepData) => {
+     const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+     return (state, action) => {
+     switch (action.type) {
+       case type:
+         return {
+           ...state,
+       [key]: reducerUtils.loading(keepData ? state[key].data : null),
+         };
+
+     ```
+
+  - 다음으로 PostListContainer 부분 deps data 삭제
+
+* post 에서 다른 post로 갈 시 이전의 데이터가 잠깐 보이는 것을 방지
+  - poss 에 액션 함수 CLEAR_POST 작성
+    ```jsx
+    const CLEAR_POST = 'CLEAR_POST';
+    ```
+  * 액션 생성 함수 작성
+    ```jsx
+    export const clearPost = () => ({ type: CLEAR_POST });
+    ```
+  * reducer case 구문 추가
+    ```jsx
+      case CLEAR_POST:
+        return {
+            ...state,
+            post: reducerUtils.initial(),
+          };
+    ```
+  * clean up 함수
+    컴포넌트 unmount, postID 바뀌어서 effect 함수 호출 직전 호출
+    ```jsx
+    useEffect(() => {
+      dispatch(getPost(postId));
+      return () => {
+        dispatch(clearPost());
+      };
+    }, [postId, dispatch]);
+    ```
+  * 지금 단계에서는 캐싱 불가(이전의 데이터 사용)
+
+### 포스트 데이터 리덕스 상태 구조 바꾸기
+
+이전의 구조는 데이터에 재사용이 힘들어짐
+
+- getPost 수정
+  - meta:id
+    리듀서에서 id를 참고해 update
+    ```jsx
+    export const getPost = (id) => async (dispatch) => {
+      dispatch({ type: GET_POST, meta: id });
+      try {
+        const payload = postsAPI.getPostById(id);
+        dispatch({ type: GET_POSTS_SUCCESS, payload, meta: id });
+      } catch (e) {
+        dispatch({
+          type: GET_POSTS_ERROR,
+          payload: e,
+          error: true,
+          meta: id,
+        });
+      }
+    };
+    ```
+  * initialState -> 비어있는 객체
+
+* reducer 설정
+  지금의 설정은 데이터를 재사용 하기 위해서 설정하는 것 이므로
+  위에서 initialState를 비어있는 객체로 선언 -> 오류 발생 가능(loading(state.post[id ].data))
+  **&&** 연산자 사용
+
+  ```jsx
+  case GET_POST:
+  return {
+  ...state,
+  post: {
+  ...state.post,
+  [id]: reducerUtils.loading(state.post[id] && state.post[id].data),
+  },
+  };
+  ```
+
+* PostContainer 수정
+  - 비구조 할당시 처음에 data가 아무것도 없을 경우 오류 발생
+    -> 간단하게는 || 통해 빈객체 삽입 또는
+    reducerUtils.inital() 사용
+    ```jsx
+    const { data, loading, error } = useSelector(
+      (state) => state.posts.post[postId] || reducerUtils.initial(),
+    );
+    ```
