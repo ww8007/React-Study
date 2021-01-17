@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getPost } from '../modules/posts';
+import { getPost, goToHome } from '../modules/posts';
 import Post from '../components/Post';
 
 function PostContainer({ postId }) {
@@ -16,7 +16,12 @@ function PostContainer({ postId }) {
   if (error) return <div>에러 발생!</div>;
   if (!data) return null;
 
-  return <Post post={data} />;
+  return (
+    <>
+      <button onClick={() => dispatch(goToHome())}>홈으로 이동</button>
+      <Post post={data} />
+    </>
+  );
 }
 
 export default PostContainer;
