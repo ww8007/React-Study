@@ -8,19 +8,19 @@ import {
   createPromiseSaga,
   createPromiseSagaById,
 } from '../lib/asyncUtils';
-import { takeEvery } from 'redux-saga/effects';
+import { takeEvery, getContext, select } from 'redux-saga/effects';
 /* 액션 타입 */
 
 // 포스트 여러개 조회하기
 const GET_POSTS = 'GET_POSTS'; // 요청 시작
 const GET_POSTS_SUCCESS = 'GET_POSTS_SUCCESS'; // 요청 성공
 const GET_POSTS_ERROR = 'GET_POSTS_ERROR'; // 요청 실패
-
+const GO_TO_HOME = 'GO_TO_HOME';
 // 포스트 하나 조회하기
 const GET_POST = 'GET_POST';
 const GET_POST_SUCCESS = 'GET_POST_SUCCESS';
 const GET_POST_ERROR = 'GET_POST_ERROR';
-
+const PRINT_STATE = 'PRINT_STATE';
 // 포스트 비우기
 const CLEAR_POST = 'CLEAR_POST';
 
@@ -32,19 +32,35 @@ const CLEAR_POST = 'CLEAR_POST';
 
 export const getPosts = () => ({ type: GET_POSTS });
 export const getPost = (id) => ({ type: GET_POST, payload: id, meta: id });
+export const printState = () => ({ type: PRINT_STATE });
 
 const getPostsSaga = createPromiseSaga(GET_POSTS, postsAPI.getPosts);
 const getPostSaga = createPromiseSagaById(GET_POST, postsAPI.getPostById);
+
+function* goToHomeSaga() {
+  const history = yield getContext('history');
+  history.push('/');
+}
+
+function* printStateSaga() {
+  const state = yield select((state) => state.posts);
+  console.log(state);
+}
 
 export function* postsSaga() {
   //모니터링 작업
   yield takeEvery(GET_POSTS, getPostsSaga);
   yield takeEvery(GET_POST, getPostSaga);
+  yield takeEvery(GO_TO_HOME, goToHomeSaga);
+  yield takeEvery(PRINT_STATE, printStateSaga);
 }
 
-export const goToHome = () => (dispatch, getState, { history }) => {
-  history.push('/');
-};
+// export const goToHome = () => (dispatch, getState, { history }) => {
+//   history.push('/');
+// };
+
+export const goToHome = () => ({ type: GO_TO_HOME });
+
 export const clearPost = () => ({ type: CLEAR_POST });
 
 // initialState 쪽도 반복되는 코드를 initial() 함수를 사용해서 리팩토링 했습니다.
