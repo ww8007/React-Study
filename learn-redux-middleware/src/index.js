@@ -14,7 +14,9 @@ import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import createSagaMiddleware from 'redux-saga';
 const customHistory = createBrowserHistory();
-const sagaMiddleware = createSagaMiddleware();
+const sagaMiddleware = createSagaMiddleware({
+  context: { history: customHistory },
+});
 const store = createStore(
   rootReducer,
   composeWithDevTools(
