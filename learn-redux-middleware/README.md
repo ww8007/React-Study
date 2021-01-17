@@ -3,12 +3,18 @@
 # 목차
 
 - [개념](#개념)
-- [리덕스 프로젝트 생성](#리덕스-프로젝스-생성)
+- [리덕스 프로젝트 생성](#리덕스-프로젝트-생성)
 - [리덕스 미들웨어 직접 작성해보기](#리덕스-미들웨어-직접-작성해보기)
 - [redux-logger 사용 및 미들웨어와 DevTools 함께 사용](#redux-logger-사용-및-미들웨어와-devtools-함께-사용)
 - [redux-thunk](#redux-thunk)
 - [redux-thunk로 Promise 다루기](#redux-thunk로-promise-다루기)
-- [포스트 리스트 구현하기](#--)
+- [라우터 연동 특정 포스트 읽기](#라우터-연동-특정-포스트-읽기)
+- [포스트 리스트 데이터 유지 및 포스트 데이터 초기화](#포스트-리스트-데이터-유지-및-포스트-데이터-초기화)
+- [포스트 데이터 리덕스 상태 구조 바꾸기](#포스트-데이터-리덕스-상태-구조-바꾸기)
+- [Thunk 함수 Util 함수](#thunk-함수-util-함수)
+- [Thunk 에서 리액트 라우터 History 사용하기](#thunk-에서-리액트-라우터-history-사용하기)
+- [JSON Server](#json-server)
+- [redux-saga](#redux-saga)
 
 ### 개념
 
@@ -660,3 +666,365 @@ import reportWebVitals from './reportWebVitals';
       (state) => state.posts.post[postId] || reducerUtils.initial(),
     );
     ```
+
+### Thunk 함수 Util 함수
+
+- 파라미터가 아이디만이 아닌 객체로 받아올 수 있게 idSelector 선언하여 사용
+
+```jsx
+const defaultIdSelector = (param) => param;
+export const createPromiseThunkById = (type, promiseCreator, idSelector) => {};
+```
+
+1. createPromisThunk 의 부분과 유사하게 작성한 뒤 meta: id 추가 및
+
+```jsx
+const id = idSelector(param) 추가
+```
+
+2. Reducer 수정
+
+meta 형식의 id를 가지고 있으니 cosnt id = action.meta
+특정 id 값을 통해 update
+...key
+객체가 없을 수 있으니 객체가 존재 할 때만 넣어주도록 && 선언
+
+```jsx
+        case type:
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            [id]: reducerUtils.loading(keepData ? (state[key][id] && state[key][id].data) : null),
+          },
+        };
+```
+
+### Thunk 에서 리액트 라우터 History 사용하기
+
+ex) 로그인 성공 경로
+
+1. index.js import
+
+```jsx
+import { createBrowserHistory } from 'history';
+
+const customHistory = createBrowserHistory();
+<Router history={customHistory}>
+```
+
+- 여러개의 withextraArgument 사용 : 객체로 선언
+
+```jsx
+const store = createStore(
+  rootReducer,
+  composeWithDevTools(
+    applyMiddleware(
+      ReduxThunk.withExtraArgument({ history: customHistory }),
+      logger,
+    ),
+  ),
+);
+```
+
+- Thunk 생성 함수를 이용한 home 구현
+
+dispatch, getState, extra
+
+extra : history -> 비구조 할당을 통한 추출
+
+- PostContainer 부분에서 goToHome() 사용
+
+```jsx
+button onClick={()=> dispatch(goToHome())}>홈으로 이동</button>
+```
+
+- 지금 상태는 Thunk -> dispatch 하면 Home으로 가게 했지만
+  나중의 경우 getState 통해 현재상태 확인 후 조건부 이동
+  비동기 작업(API) <- 조건부 페이지 전환 가능
+
+### JSON Server
+
+JSON 파일 하나만 있으면 연습용
+-> 실제에서는 FireBase or Back 구현
+
+1. 생성 디렉토리에 data.json 선언
+2. 실제 사용하려는 데이터 크롬 개발자 도구 console에 복사
+3. JSON.stringify(posts, null, 2)
+4. 서버 열어주기
+   npx json-server ./data.json --port 4000
+   [**서버 이미지**]<br>
+   ![image](https://user-images.githubusercontent.com/54137044/104830733-d4aeec80-58c4-11eb-81f7-a67b0abe656d.png)
+
+- json 파일 기반해서 get method 이용
+
+- postman 설치 후 사용
+  [**postman**]<br>
+  ![image](https://user-images.githubusercontent.com/54137044/104830752-0f188980-58c5-11eb-8b50-5596ee84c10b.png)
+
+* POST method 이용한 올리기
+  ![image](https://user-images.githubusercontent.com/54137044/104830825-c44b4180-58c5-11eb-9725-eab6bb4f1d5c.png)
+
+* PUT method 이용한 수정
+  ![image](https://user-images.githubusercontent.com/54137044/104830803-949c3980-58c5-11eb-8d65-515d5da7b1da.png)
+
+5. axios 설치
+   yarn add axios
+
+6. api 부분 ./api/posts/js 수정
+
+- 주의 사항 template literal 사용 시 ` 사용 주의
+
+```jsx
+import axios from 'axios';
+
+export const getPosts = async () => {
+  const response = await axios.get('http://localhost:4000/posts');
+  return response.data;
+};
+// const idSelector = param => param.id;
+export const getPostById = async (id) => {
+  const response = await axios.get(`http://localhost:4000/posts/${id}`);
+  return response.data;
+};
+```
+
+### CORS와 Webpack DevSErver Proxy
+
+axios 이용 API 호출 할 때 포트가 다르면 원래는 사용할 수 없는게 맞음
+json sever에서는 이미 설정이 되어있음
+
+- \*을 사용 어디서 오든 사용이 가능
+  backend 직접 구성을 하는 경우 개발 서버에서 들어오는 경우도 설정을 해줘야함
+- 프록시를 사용하게 되면 개발 서버에서 프록시를 통해 백엔드 전달
+- 백엔드 -> 프록시 -> 개발서버
+
+- 프록시 설정
+
+1. package.json
+   "proxy": "http://localhost:4000" 추가
+2. 서버 다시 열어주기
+   npx json-server ./data.json --port 4000
+
+[**network**]<br>
+![image](https://user-images.githubusercontent.com/54137044/104831206-05455500-58ca-11eb-9d99-a311833dd524.png)
+제대로 3000번 포트에서 동작하는 것을 확인할 수 있다.
+
+### redux-saga
+
+- thunk -> 함수를 dispatch
+
+- saga -> 액션을 모니터링
+
+  1. thunk로 구현하기 까다로운 작업을 해줄 수 있음
+  2. 비동기 작업 진행 할 때 기존 요청 취소 가능
+  3. 특정 액션 발생 시 액션 dispatch or 자바스크립트 코드 실행 가능
+  4. 웹소켓 사용 경우 Channel 기능 사용 더 효율적 코드 사용 가능
+  5. 비동기 작업 실패 시 재시도 기능 구현 가능
+
+- **Generator** 문법 사용
+
+함수의 흐름을 특정 구간에 멈춰놨다가 다시 실행 가능
+결과값을 여러번 내보낼 수 있음
+
+yield 사용 여러번 리턴 값 사용 가능
+
+```jsx
+function* generatorFunction() {
+  console.log('안녕하세요?');
+  yield 1;
+  console.log('제너레이터 함수');
+  yield 2;
+  console.log('function*');
+  yield 3;
+  return 4;
+}
+```
+
+상수 generator로 받아온 뒤
+generator.next() 호출 해서 사용
+
+```jsx
+function* sumGenerator() {
+    console.log('sumGenerator이 시작됐습니다.');
+    let a = yield;
+    console.log('a값을 받았습니다.');
+    let b = yield;
+    console.log('b값을 받았습니다.');
+    yield a + b;
+```
+
+.next(값) 을 통해 대입도 가능
+
+```jsx
+funtion* infiniteAddGenerator() {
+  let result = 0;
+  while(true) {
+    result += yield result;
+  }
+}
+```
+
+끝나지 않는 반복문도 사용 가능
+
+- redux-saga는 Generator에 기반한 미들웨어
+
+### redux-saga 설치 및 사용
+
+yarn add redux-saga
+
+1. 기존의 thunk 함수가 dispatch 이용한 export 였다면 saga -> 순수 객체 만드는 함수로 변환
+2. saga 작성
+   1. redux-saga import
+      ```jsx
+      import { delay, put } from 'redux-saga/effects';
+      ```
+   2. saga 함수 사용
+      - 특정 작업 명령하기 위해서는 yield 사용
+        ```jsx
+            yield delay(1000);
+        ```
+      * put
+        dispatch와 비슷한 개념
+        increase 호출해서 액션 객체 만들고 액션 dispatch 하도록 명령
+        ```jsx
+            yield put(increase());
+        ```
+      * takeEvery
+        INCREASE_ASYNC 액션 dispatch 할 때 마다 코드 실행 의미
+      * takeLatest
+        가장 마지막으로 들어오는 액션을 받음
+        - 만약 delay로 기다리는 도중 마지막 들어오는 명령 바뀌면 그 명령으로 최신화
+      * takeLeading
+        latest와 반대 개념
+      * takeEvery, takeLatest saga를 내보내줘서 **root saga** 생성
+3. root-saga 생성
+   ```jsx
+   import { all } from 'redux-saga/effects';
+   ```
+   - counterSaga 같은 saga 늘어날 수록 배열 안 추가
+   ```jsx
+   export function* rootSaga() {
+     yield all([counterSaga()]);
+   }
+   ```
+4. index.js createSagaMiddleware import
+   ```jsx
+   import createSagaMiddleware from 'redux-saga';
+   const sagaMiddleware = createSagaMiddleware();
+   ```
+   - store에 추가
+     saga 먼저 오든 thunk 먼저 오든 순서 무관
+     ```jsx
+     const store = createStore(
+       rootReducer,
+       composeWithDevTools(
+         applyMiddleware(
+           ReduxThunk.withExtraArgument({ history: customHistory }),
+           sagaMiddleware,
+           logger,
+         ),
+       ),
+     );
+     ```
+   * run 실행 시켜주기
+     rootSaga 호출은 아니고 선언만 시켜주면 됨(파라미터로 전달)
+   ```jsx
+   sagaMiddleware.run(rootSaga);
+   ```
+
+### redux-saga로 Promise 다루기
+
+redux-saga 에서는 순수 액션 객체를 만들고
+action 모니터링 하고 읽어옴
+
+- yield call : 해당 함수 파라미터 사용해서 호출
+  promise가 반환값이 존재 시 반환 할 때 까지 기다림
+
+1. ./modules의 posts 부분 getPosts, getPost 수정
+
+- Posts의 경우 바로 객체만 선언하면 되고
+- Post의 경우 하나만 불러와야 하기 때문에 분류를 위해 payload와 meta 값 선언 필요
+
+```jsx
+export const getPosts = () => ({ type: GET_POSTS });
+export const getPost = (id) => ({ type: GET_POST, payload: id, meta: id });
+```
+
+2.  saga 선언 **getPostsSaga**, **getPostSaga**
+
+    - getPostsSaga의 경우 받아올 값 없기에 함수 인자에 아무것도 필요 x
+    - 특정 함수를 호출하는 명령을 내리기에 import call
+      yield call 사용하여 postsAPI 부분의 getPosts 함수 호출
+
+    ```jsx
+    import { call, put } from 'redux-saga/effects';
+    ```
+
+    1.  getPost**s**Saga
+
+        1. call을 통해 const posts 선언 부에 API로 호출한 목록들을 받아올 때 까지 기다렸다가 적용 시킴
+
+        ```jsx
+            try {
+            const posts = yield call(postsAPI.getPosts);
+            }
+
+        ```
+
+        2. put을 통해 액션을 dispatch
+
+        - try
+          ```jsx
+              yield put({
+                type: GET_POSTS_SUCCESS,
+                payload: posts,
+              })
+          ```
+
+        * catch
+          ```jsx
+              catch(e) {
+            yield put({
+              type: GET_POSTS_ERROR,
+              payload: e,
+              error : true,
+            })
+          }
+          ```
+
+    2.  getPostSaga
+        > getPostSaga의 경우 API 호출에서도 id 값을 par로 사용하고
+        > 액션 생성함수에서도 payload와 meta 값으로 id를 사용하기에
+        > action 정보를 받아와야함
+        - 이렇게 action만 선언해줘도 해결
+          ```jsx
+          function* getPostSaga(action) {}
+          ```
+        - action id 값을 payload로 사용
+          ```jsx
+          const id = action.payload;
+          ```
+        - call 의 두번째 par로 id 받아옴
+          -> payload의 값에 id 정보가 담기게 됨
+          ```jsx
+              const post = yield call(postsAPI.getPostById, id);
+          ```
+        * try, catch는 getPostsSaga와 동일하나 meta : id 만 따로 선언
+    3.  Redux module을 위한 Saga 모니터링
+        takeEvery를 통해 액션타입 postSaga, postsSaga라면 Saga 호출
+
+            ```jsx
+            export function* postsSaga() {
+            //모니터링 작업
+            yield takeEvery(GET_POSTS, getPostsSaga);
+            yield takeEvery(GET_POST, getPostSaga);
+            }
+            ```
+
+    4.  modules/index.js에 postsSaga 추가
+        ```jsx
+        export function* rootSaga() {
+          yield all([counterSaga(), postsSaga()]);
+        }
+        ```
