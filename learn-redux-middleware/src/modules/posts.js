@@ -5,8 +5,10 @@ import {
   handleAsyncActions,
   // createPromiseThunkById,
   handleAsyncActionsById,
+  createPromiseSaga,
+  createPromiseSagaById,
 } from '../lib/asyncUtils';
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { takeEvery } from 'redux-saga/effects';
 /* 액션 타입 */
 
 // 포스트 여러개 조회하기
@@ -31,42 +33,8 @@ const CLEAR_POST = 'CLEAR_POST';
 export const getPosts = () => ({ type: GET_POSTS });
 export const getPost = (id) => ({ type: GET_POST, payload: id, meta: id });
 
-function* getPostsSaga() {
-  try {
-    const posts = yield call(postsAPI.getPosts);
-    // posts에 모든 내용 담길 때 까지 기다림 <- call
-    yield put({
-      type: GET_POSTS_SUCCESS,
-      payload: posts,
-    });
-    // type : 성공과 payload값 선언
-  } catch (e) {
-    yield put({
-      type: GET_POSTS_ERROR,
-      payload: e,
-      error: true,
-    });
-  }
-}
-
-function* getPostSaga(action) {
-  const id = action.payload;
-  try {
-    const post = yield call(postsAPI.getPostById, id);
-    yield put({
-      type: GET_POST_SUCCESS,
-      payload: post,
-      meta: id,
-    });
-  } catch (e) {
-    yield put({
-      type: GET_POST_ERROR,
-      payload: e,
-      error: true,
-      meta: id,
-    });
-  }
-}
+const getPostsSaga = createPromiseSaga(GET_POSTS, postsAPI.getPosts);
+const getPostSaga = createPromiseSagaById(GET_POST, postsAPI.getPostById);
 
 export function* postsSaga() {
   //모니터링 작업
