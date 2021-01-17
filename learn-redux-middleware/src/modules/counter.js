@@ -1,4 +1,10 @@
-import { delay, put, takeEvery, takeLatest } from 'redux-saga/effects';
+import {
+  delay,
+  put,
+  takeEvery,
+  takeLatest,
+  takeLeading,
+} from 'redux-saga/effects';
 
 const INCREASE = 'INCREASE';
 const DECREASE = 'DECREASE';
@@ -33,7 +39,7 @@ function* decreaseSaga() {
 
 export function* counterSaga() {
   yield takeEvery(INCREASE_ASYNC, increaseSaga);
-  yield takeLatest(DECREASE_ASYNC, decreaseSaga);
+  yield takeLeading(DECREASE_ASYNC, decreaseSaga);
 }
 
 const initialState = 0;
