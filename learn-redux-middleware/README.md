@@ -15,6 +15,9 @@
 - [Thunk 에서 리액트 라우터 History 사용하기](#thunk-에서-리액트-라우터-history-사용하기)
 - [JSON Server](#json-server)
 - [redux-saga](#redux-saga)
+- [redux-saga 설치 및 사용](#redux-saga-설치-및-사용)
+- [redux-saga로 Promise 다루기](#redux-saga로-promise-다루기)
+- [Saga Utill 함수 생성](#saga-utill-함수-생성)
 
 ### 개념
 
@@ -1028,3 +1031,146 @@ export const getPost = (id) => ({ type: GET_POST, payload: id, meta: id });
           yield all([counterSaga(), postsSaga()]);
         }
         ```
+
+### Saga Utill 함수 생성
+
+기존 구현했던 Thunk 방식과 비슷
+
+- createPromiseSaga
+
+  1. type, promiseCreator 가져옴
+  2. action type 생성
+     ```jsx
+     const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+     ```
+  3. return 값 함수로 받아오면서 saga로 함수명 생성(함수명 생략 가능)
+     par <- action 받아옴(API 요청 시 파라미터 필요 가능성)
+
+  - try catch 구문 작성
+
+  ```jsx
+  return function* saga(action) {
+    try {
+    } catch (e) {}
+  };
+  ```
+
+  4.  redux-saga로 부터 **call, put** import
+      ```jsx
+      import { call, put } from 'redux-saga/effects';
+      ```
+  5.  result 상수 생성 후 promisCreator(promise 생성)
+      par로 action.payload 받아와서 생성
+      ```jsx
+        const result = yield call(promiseCreator, action.payload);
+      ```
+  6.  성공한 결과가 result에 담기게 되면 Success 표시 -> put
+      ```jsx
+        yield put({
+            type: SUCCESS,
+            payload: result,
+          });
+      ```
+  7.  에러 구문 작성 -> put
+
+      ```jsx
+        catch (e) {
+        yield put({
+            type: ERROR,
+            error: true,
+            payload: e,
+          });
+        }
+      ```
+
+  8.  Saga에서 idSelector 불필요 -> meta에 id 삽입
+      action.meta -> id
+      - meta:id 삽입 제외하고는 다른 내용들은 동일
+        ```jsx
+        const id = action.meta;
+        ```
+      * try : Success
+        ```jsx
+         yield put({
+         type: SUCCESS,
+         payload:result,
+         meta: id,
+        });
+        ```
+  9.  ./modules/posts.js 에서 Utill 함수 적용
+
+      - asyncUtils 부분에서 선언한 Utill 함수 createPromiseSaga, createPromiseSagaById를 사용
+        1st par : 액션 타입
+        2st par : API 쪽 선언 함수 getPosts or getPostById
+
+        ```jsx
+        const getPostsSaga = createPromiseSaga(GET_POSTS, postsAPI.getPosts);
+        const getPostSaga = createPromiseSagaById(
+          GET_POST,
+          postsAPI.getPostById,
+        );
+        ```
+
+### redux-saga history 사용하기
+
+- hisory 선언 후 사용
+  1. createSagaMiddleware에서 context(객체로) 설정
+     ```jsx
+     const sagaMiddleware = createSagaMiddleware({
+       context: { history: customHistory },
+     });
+     ```
+  2. ./modules goToHome -> 액션 타입 선언
+     ```jsx
+     const GO_TO_HOME = 'GO_TO_HOME';
+     ```
+  3. 액션에 대해 saga 선언
+     **getContext** 불러오기 (redux-saga/effects 중 하나)
+     history 이름으로 index.js에서 불러왔기에 getContext의 인자로 전달
+     ```jsx
+     function* goToHomeSaga() {
+       const history = yield getContext('history');
+       history.push('/');
+     }
+     ```
+  4. rootSaga에 담기는 takeEvery 부분
+     1st par -> action.type : GO_TO_HOME
+     2nd par -> 생성 함수(goToHomeSaga) 사용
+     ```jsx
+     export function* postsSaga() {
+       //모니터링 작업
+       yield takeEvery(GET_POSTS, getPostsSaga);
+       yield takeEvery(GET_POST, getPostSaga);
+       yield takeEvery(GO_TO_HOME, goToHomeSaga);
+     }
+     ```
+
+### select로 현재상태 조회하기
+
+saga -> redux-store 지니고 있는 상태 -> select 사용
+
+1. import select from redux-saga/effects
+
+```jsx
+import { takeEvery, getContext, select } from 'redux-saga/effects';
+```
+
+2. state 안의 posts 조회하고 싶다면 이렇게 사용
+
+```jsx
+const state = yield select(state=> state.posts);
+```
+
+3. 액션 생성함수 생성
+
+```jsx
+export const printState = () => ({ type: PRINT_STATE });
+```
+
+4. 사용하고 싶은 곳에서 호출
+
+- printState() 함수형으로 호출하는 것 **주의**
+
+```jsx
+<button onClick={() => dispatch(printState())}>상태 출력</button>
+```
