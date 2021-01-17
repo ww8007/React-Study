@@ -3,6 +3,8 @@ import {
   createPromiseThunk,
   reducerUtils,
   handleAsyncActions,
+  createPromiseThunkById,
+  handleAsyncActionsById,
 } from '../lib/asyncUtils';
 
 /* 액션 타입 */
@@ -22,21 +24,10 @@ const CLEAR_POST = 'CLEAR_POST';
 
 // 아주 쉽게 thunk 함수를 만들 수 있게 되었습니다.
 export const getPosts = createPromiseThunk(GET_POSTS, postsAPI.getPosts);
-export const getPost = (id) => async (dispatch) => {
-  dispatch({ type: GET_POST, meta: id });
-  try {
-    const payload = await postsAPI.getPostById(id);
-    dispatch({ type: GET_POST_SUCCESS, payload, meta: id });
-  } catch (e) {
-    dispatch({
-      type: GET_POST_ERROR,
-      payload: e,
-      error: true,
-      meta: id,
-    });
-  }
+export const getPost = createPromiseThunkById(GET_POST, postsAPI.getPostById);
+export const goToHome = () => (dispatch, getState, { history }) => {
+  history.push('/');
 };
-
 export const clearPost = () => ({ type: CLEAR_POST });
 
 // initialState 쪽도 반복되는 코드를 initial() 함수를 사용해서 리팩토링 했습니다.
@@ -46,37 +37,7 @@ const initialState = {
 };
 
 const getPostsReducer = handleAsyncActions(GET_POSTS, 'posts', true);
-const getPostReducer = (state, action) => {
-  const id = action.meta;
-  switch (action.type) {
-    case GET_POST:
-      return {
-        ...state,
-        post: {
-          ...state.post,
-          [id]: reducerUtils.loading(state.post[id] && state.post[id].data),
-        },
-      };
-    case GET_POST_SUCCESS:
-      return {
-        ...state,
-        post: {
-          ...state.post,
-          [id]: reducerUtils.success(action.payload),
-        },
-      };
-    case GET_POST_ERROR:
-      return {
-        ...state,
-        post: {
-          ...state.post,
-          [id]: reducerUtils.erorr(state.post[id] && state.post[id].data),
-        },
-      };
-    default:
-      return state;
-  }
-};
+const getPostReducer = handleAsyncActionsById(GET_POST, 'post', true);
 export default function posts(state = initialState, action) {
   switch (action.type) {
     case GET_POSTS:
