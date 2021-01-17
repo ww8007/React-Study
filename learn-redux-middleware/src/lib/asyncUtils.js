@@ -1,44 +1,37 @@
-/* eslint-disable no-template-curly-in-string */
-export const createPromiseThunk = (type, promiseCreator) => {
+// saga로 작성된 cratePromise
+import { call, put } from 'redux-saga/effects';
+export const createPromiseSaga = (type, promiseCreator) => {
   const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
-  return (param) => async (dispatch) => {
-    dispatch({ type });
+  return function* saga(action) {
     try {
-      const payload = await promiseCreator(param);
-      dispatch({
+      const result = yield call(promiseCreator, action.payload);
+      yield put({
         type: SUCCESS,
-        payload,
+        payload: result,
       });
     } catch (e) {
-      dispatch({
+      yield put({
         type: ERROR,
-        payload: e,
         error: true,
+        payload: e,
       });
     }
   };
 };
 
-const defaultIdSelector = (param) => param;
-// 파라미터 자체가 id
-export const createPromiseThunkById = (
-  type,
-  promiseCreator,
-  idSelector = defaultIdSelector,
-) => {
+export const createPromiseSagaById = (type, promiseCreator) => {
   const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
-  return (param) => async (dispatch) => {
-    const id = idSelector(param);
-    dispatch({ type, meta: id });
+  return function* saga(action) {
+    const id = action.meta;
     try {
-      const payload = await promiseCreator(param);
-      dispatch({
+      const result = yield call(promiseCreator, action.payload);
+      yield put({
         type: SUCCESS,
-        payload,
+        payload: result,
         meta: id,
       });
     } catch (e) {
-      dispatch({
+      yield put({
         type: ERROR,
         payload: e,
         error: true,
@@ -131,4 +124,55 @@ export const reducerUtils = {
     loading: false,
     error: error,
   }),
+};
+
+// Thunk로 작성된 createPromise
+export const createPromiseThunk = (type, promiseCreator) => {
+  const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+  return (param) => async (dispatch) => {
+    dispatch({ type });
+    try {
+      const payload = await promiseCreator(param);
+      dispatch({
+        type: SUCCESS,
+        payload,
+      });
+    } catch (e) {
+      dispatch({
+        type: ERROR,
+        payload: e,
+        error: true,
+      });
+    }
+  };
+};
+
+// Thunk로 작성된 IdSelector
+const defaultIdSelector = (param) => param;
+// 파라미터 자체가 id
+export const createPromiseThunkById = (
+  type,
+  promiseCreator,
+  idSelector = defaultIdSelector,
+) => {
+  const [SUCCESS, ERROR] = [`${type}_SUCCESS`, `${type}_ERROR`];
+  return (param) => async (dispatch) => {
+    const id = idSelector(param);
+    dispatch({ type, meta: id });
+    try {
+      const payload = await promiseCreator(param);
+      dispatch({
+        type: SUCCESS,
+        payload,
+        meta: id,
+      });
+    } catch (e) {
+      dispatch({
+        type: ERROR,
+        payload: e,
+        error: true,
+        meta: id,
+      });
+    }
+  };
 };
