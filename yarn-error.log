@@ -1,0 +1,67 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add esling-cong-prettier
+
+PATH: 
+  C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\장동현\AppData\Roaming\SPB_Data\bin;C:\Python39\Scripts;C:\Python39;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\NAT Service;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\iCLS;C:\Program Files\Intel\Intel(R) Management Engine Components\iCLS;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Microsoft SQL Server\130\Tools\Binn;C:\Program Files\MATLAB\R2020a\bin;C:\Program Files\dotnet;C:\Program Files\Git\cmd;C:\MinGW\bin;C:\Program Files (x86)\IVI Foundation\VISA\WinNT\Bin;C:\Program Files\IVI Foundation\VISA\Win64\Bin;C:\Program Files (x86)\IVI Foundation\VISA\WinNT\Bin;C:\Program Files\nodejs;C:\ProgramData\chocolatey\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files\Intel\WiFi\bin;C:\Program Files\Common Files\Intel\WirelessCommon;C:\Program Files\PuTTY;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files (x86)\Yarn\bin;C:\Users\Jang\AppData\Local\Programs\Python\Python37\Scripts;C:\Users\Jang\AppData\Local\Programs\Python\Python37;C:\Users\Jang\AppData\Local\Programs\Python\Python39\Scripts;C:\Users\Jang\AppData\Local\Programs\Python\Python39;C:\Users\Jang\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Intel\WiFi\bin;C:\Program Files\Common Files\Intel\WirelessCommon;C:\Program Files\Bandizip;C:\Users\Jang\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Jang\AppData\Roaming\npm;C:\Users\Jang\AppData\Local\GitHubDesktop\bin;C:\Program Files (x86)\Nmap;C:\Users\Jang\AppData\Local\Yarn\bin
+
+Yarn version: 
+  1.22.5
+
+Node version: 
+  15.0.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/esling-cong-prettier: Not found
+      at Request.params.callback [as _callback] (C:\Program Files (x86)\Yarn\lib\cli.js:66097:18)
+      at Request.self.callback (C:\Program Files (x86)\Yarn\lib\cli.js:140749:22)
+      at Request.emit (node:events:327:20)
+      at Request.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:141721:10)
+      at Request.emit (node:events:327:20)
+      at IncomingMessage.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:141643:12)
+      at Object.onceWrapper (node:events:433:28)
+      at IncomingMessage.emit (node:events:339:22)
+      at endReadableNT (node:internal/streams/readable:1289:12)
+      at processTicksAndRejections (node:internal/process/task_queues:80:21)
+
+npm manifest: 
+  {
+      "name": "react-study",
+      "version": "1.0.0",
+      "description": "React Study",
+      "main": "index.js",
+      "dependencies": {
+          "eslint-config-airbnb": "^18.2.1"
+      },
+      "devDependencies": {
+          "eslint": "^7.17.0",
+          "eslint-config-prettier": "^7.1.0",
+          "eslint-plugin-prettier": "^3.3.1",
+          "eslint-plugin-react": "^7.22.0",
+          "prettier": "^2.2.1"
+      },
+      "scripts": {
+          "test": "echo \"Error: no test specified\" && exit 1"
+      },
+      "repository": {
+          "type": "git",
+          "url": "git+https://github.com/ww8007/React-Study.git"
+      },
+      "author": "",
+      "license": "ISC",
+      "bugs": {
+          "url": "https://github.com/ww8007/React-Study/issues"
+      },
+      "homepage": "https://github.com/ww8007/React-Study#readme",
+      "eslintConfig": {
+          "extends": "[react-app, airbnb]"
+      }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

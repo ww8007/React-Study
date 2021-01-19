@@ -1,0 +1,41 @@
+{
+    "name": "react-study",
+    "version": "1.0.0",
+    "description": "React Study",
+    "main": "index.js",
+    "dependencies": {
+        "axios": "^0.21.1",
+        "dotenv": "^8.2.0",
+        "eslint-config-airbnb": "^18.2.1",
+        "koa-bodyparser": "^4.3.0",
+        "mongoose": "^5.11.12",
+        "react-redux": "^7.2.2",
+        "redux": "^4.0.5"
+    },
+    "devDependencies": {
+        "eslint": "^7.17.0",
+        "eslint-config-prettier": "^7.1.0",
+        "eslint-plugin-prettier": "^3.3.1",
+        "eslint-plugin-react": "^7.22.0",
+        "prettier": "^2.2.1"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ww8007/React-Study.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ww8007/React-Study/issues"
+    },
+    "homepage": "https://github.com/ww8007/React-Study#readme",
+    "eslintConfig": {
+        "extends": "[react-app, airbnb, prettier]"
+    },
+    "rules": {
+        "no-unused-vars": 1
+    }
+}
