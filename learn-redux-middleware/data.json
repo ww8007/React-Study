@@ -1,24 +1,24 @@
 {
-  "posts": [
-    {
-      "id": 1,
-      "title": "리덕스 미들웨어 공부",
-      "body": "리덕스 미들웨어를 직접 만들어보면 이해 쉬움"
-    },
-    {
-      "id": 2,
-      "title": "redux-thunk 사용해봅시다.",
-      "body": "redux-thunk를 사용한 비동기 작업 처리"
-    },
-    {
-      "id": 3,
-      "title": "redux-saga",
-      "body": "redux-saga 나중에 사용 비동기 작업 처리"
-    },
-    {
-      "title": "바꾸고싶어요",
-      "body": "수정해봐요!",
-      "id": 4
-    }
-  ]
+    "el": [{
+            "name": "Joe",
+            "age": "20"
+        },
+        {
+            "name": "Mary",
+            "age": "27",
+            "book": [{
+                    "name": "Blow",
+                    "age": "15"
+                },
+                {
+                    "name": "Blow",
+                    "age": "15",
+                    "book": [{
+                        "name": "kelly",
+                        "age": "29"
+                    }]
+                }
+            ]
+        }
+    ]
 }
